@@ -1,0 +1,52 @@
+// home.scss
+.slider-container-home-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // min-height: 50vh;
+}
+
+.searchbar-container-home-page {
+  display: flex;
+  justify-content: center;
+}
+
+
+.content{
+  margin-left: 6%;
+  margin-right: 6%;
+  margin-top: 2%;
+}
+
+.book-cover-home-page{
+  
+}
+
+.content-home{
+  margin-top: 5%;
+}
+
+// Responsive styles
+@media only screen and (max-width: 768px) {
+  .slider-container-home-page {
+      min-height: 40vh; // Adjust the height for smaller screens
+  }
+  .content-recommend{
+    margin: 0%;
+  }
+  .content-Popular{
+    margin: 0%;
+  }
+}
+
+@media only screen and (max-width: 576px) {
+  .slider-container-home-page {
+      min-height: 30vh; // Adjust the height for even smaller screens
+  }
+  .content-recommend{
+    margin: 0%;
+  }
+  .content-Popular{
+    margin: 0%;
+  }
+}

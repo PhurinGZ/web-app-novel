@@ -1,0 +1,29 @@
+.custom-btn {
+    display: flex;
+    width: 100%;
+    height: 50%; /* Reduced height */
+    background-color: #F5940B;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 20px; /* Reduced border radius */
+    padding: 6px 20px 6px 11px; /* Reduced padding */
+    font-size: 14px; /* Reduced font size */
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.3s ease;
+    align-items: center;
+  }
+  
+  .custom-btn .text {
+    margin-left: 8%; /* Adjusted margin-left */
+  }
+
+  .custom-btn .avtar{
+
+  }
+  
+  .custom-btn:hover {
+    background-color: #D38312;
+    cursor: pointer;
+  }
