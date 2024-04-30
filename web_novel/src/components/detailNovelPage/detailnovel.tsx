@@ -7,6 +7,7 @@ import Image from "next/image";
 import "@/components/detailNovelPage/style.scss";
 import dataCardNovel from "@/data/data";
 import { Link } from "@nextui-org/react";
+import Footer from "../footer/footer";
 
 // interface userReview {
 //   id: number;
@@ -91,90 +92,95 @@ function DetailNovel({ _id }: Props): JSX.Element {
         </div>
       </nav>
       <main>
-        <Grid container>
-          <Grid item xs={12}>
-            <div className="p-6 sm:pt-12">
-              <div className="container">
-                <div>
-                  <h1 className="text-2xl font-bold">Detail Novel</h1>
-                </div>
-                {dataCardNovel.map((dt: DataCardNovel, index: React.Key) =>
-                  dt.id === _id ? (
-                    <div key={index}>
-                      <div className="flex items-center mt-4 space-x-4">
-                        {/* Image */}
-                        <Image
-                          src="/image/imageBook1.png"
-                          alt=""
-                          className="max-w-24 max-h-32 object-cover"
-                          width={100}
-                          height={100}
-                        />
-                        {/* Text */}
-                        <div>
-                          <h1 className="text-xl font-bold">{dt.name}</h1>
-                          <p>by: {dt.author}</p> {/* Display author */}
-                          <p className="text-sm">{dt.detail}</p>
-                        </div>
-                      </div>
-
-                      <div className="mt-6 border-solid border-2 border-gray-200 rounded-md p-4">
-                        <h2 className="text-lg font-semibold">Chapters</h2>{" "}
-                        {/* Corrected heading */}
-                        <div className="mt-2 space-y-2">
-                          {dt.chapter.map((chapter, index) => (
-                            <Link
-                              href={`/read/${chapter.id}`}
-                              key={index}
-                              className="chapter"
-                            >
-                              <h3 className="chapter-title">
-                                Chapter {chapter.name}
-                              </h3>{" "}
-                              {/* Display chapter name */}
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="review mt-6">
-                        <div className="total-review">
-                          <Rating
-                            name="controlled-rating"
-                            value={ratingUser}
-                            onChange={handleRatingChange}
-                            precision={0.5}
-                            readOnly
+        <div className="pb-12">
+          <Grid container>
+            <Grid item xs={12}>
+              <div className="p-6 sm:pt-12">
+                <div className="container">
+                  <div>
+                    <h1 className="text-2xl font-bold">Detail Novel</h1>
+                  </div>
+                  {dataCardNovel.map((dt: DataCardNovel, index: React.Key) =>
+                    dt.id === _id ? (
+                      <div key={index}>
+                        <div className="flex items-center mt-4 space-x-4">
+                          {/* Image */}
+                          <Image
+                            src="/image/imageBook1.png"
+                            alt=""
+                            className="max-w-24 max-h-32 object-cover"
+                            width={100}
+                            height={100}
                           />
-                          <p className="text-sm">
-                            Current Rating: {ratingUser}
-                          </p>
+                          {/* Text */}
+                          <div>
+                            <h1 className="text-xl font-bold">{dt.name}</h1>
+                            <p>by: {dt.author}</p> {/* Display author */}
+                            <p className="text-sm">{dt.detail}</p>
+                          </div>
                         </div>
-                        <div className="review-user mt-4">
-                          {dt.rating.map((rat, index) => (
-                            <div className="review-user mt-4" key={index}>
-                              {console.log(index)}
-                              <div className="mb-4">
-                                <Rating
-                                  name={`controlled-rating-${index}`}
-                                  value={rat} // Assuming dt.rating is an average rating
-                                  readOnly
-                                  precision={0.5}
-                                />
-                                <p className="text-sm">Average Rating: {rat}</p>
+
+                        <div className="mt-6 border-solid border-2 border-gray-200 rounded-md p-4">
+                          <h2 className="text-lg font-semibold">Chapters</h2>{" "}
+                          {/* Corrected heading */}
+                          <div className="mt-2 space-y-2">
+                            {dt.chapter.map((chapter, index) => (
+                              <Link
+                                href={`/read/${chapter.id}`}
+                                key={index}
+                                className="chapter"
+                              >
+                                <h3 className="chapter-title">
+                                  Chapter {chapter.name}
+                                </h3>{" "}
+                                {/* Display chapter name */}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="review mt-6">
+                          <div className="total-review">
+                            <Rating
+                              name="controlled-rating"
+                              value={ratingUser}
+                              onChange={handleRatingChange}
+                              precision={0.5}
+                              readOnly
+                            />
+                            <p className="text-sm">
+                              Current Rating: {ratingUser}
+                            </p>
+                          </div>
+                          <div className="review-user mt-4">
+                            {dt.rating.map((rat, index) => (
+                              <div className="review-user mt-4" key={index}>
+                                {console.log(index)}
+                                <div className="mb-4">
+                                  <Rating
+                                    name={`controlled-rating-${index}`}
+                                    value={rat} // Assuming dt.rating is an average rating
+                                    readOnly
+                                    precision={0.5}
+                                  />
+                                  <p className="text-sm">
+                                    Average Rating: {rat}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ) : null
-                )}
+                    ) : null
+                  )}
+                </div>
               </div>
-            </div>
+            </Grid>
           </Grid>
-        </Grid>
+        </div>
       </main>
+      <Footer />
     </div>
   );
 }

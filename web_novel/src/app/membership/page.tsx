@@ -1,13 +1,13 @@
-'use client'
 import React from "react";
 import Membership from "@/components/membership/membership";
 
-function test() {
+function page() {
   return (
     <div>
+        
       <Membership />
     </div>
   );
 }
 
-export default test;
+export default page;

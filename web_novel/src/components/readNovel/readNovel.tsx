@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom"; // Import useParams
 import novelContent from "../../data/dataContent";
 import NavBar from "../navbar/navbar";
 import dataCardNovel from "@/data/data";
+import Footer from "../footer/footer";
 
 interface Chapter {
   id: number;
@@ -110,6 +111,7 @@ function ReadNovel() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

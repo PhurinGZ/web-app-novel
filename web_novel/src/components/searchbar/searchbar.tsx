@@ -8,14 +8,12 @@ interface Animal {
   description: string;
 }
 
-
 const App: React.FC = () => {
+  const [selected, setSelected] = useState<Animal | null>();
 
-  const [selected,setSelected] = useState<Animal | null>();
-
-  const handleClick = () =>{
-    console.log(selected)
-  }
+  const handleClick = () => {
+    console.log(selected);
+  };
 
   return (
     <div className="flex">
@@ -31,8 +29,16 @@ const App: React.FC = () => {
           <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>
         )}
       </Autocomplete>
-
-      <Button color="warning" size="lg" onClick={handleClick} className="h-full">Search</Button>
+      <div className="ml-4">
+        <Button
+          color="warning"
+          size="lg"
+          onClick={handleClick}
+          className="h-full"
+        >
+          Search
+        </Button>
+      </div>
     </div>
   );
 };
