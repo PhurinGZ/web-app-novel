@@ -11,14 +11,15 @@ interface Chapter {
   content: string;
 }
 
-function ReadNovel() {
-  const { _id } = useParams<{ _id: string }>(); // Access _id from URL
+function ReadNovel({ _id }) {
+  // const { _id } = useParams<{ _id: string }>(); // Access _id from URL
   const [currentChapterIndex, setCurrentChapterIndex] = useState<number>(0);
   const [dataNovel, setDataNovel] = useState<any>();
 
   useEffect(() => {
     // Convert _id to a number and set currentChapterIndex
     const id = parseInt(_id);
+    console.log(id);
     if (!isNaN(id) && id >= 0 && id < novelContent.length) {
       setCurrentChapterIndex(id);
     }
