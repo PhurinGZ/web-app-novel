@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "categories",
+  "info": {
+    "singularName": "category",
+    "pluralName": "categories",
+    "displayName": "category",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "novels": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::novel.novel",
+      "mappedBy": "category"
+    },
+    "nameThai": {
+      "type": "string"
+    }
+  }
+}

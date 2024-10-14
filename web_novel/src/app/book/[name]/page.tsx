@@ -5,7 +5,7 @@ import DetailNovel from "@/components/detailNovelPage/detailnovel";
 import { NextUIProvider } from "@nextui-org/react";
 
 export default function ExampleClientComponent() {
-  const params = useParams<{ id: string }>();
+  const params = useParams<{ name: string }>();
 
   // Route -> /shop/[tag]/[item]
   // URL -> /shop/shoes/nike-air-max-97
@@ -15,7 +15,7 @@ export default function ExampleClientComponent() {
   return (
     <NextUIProvider>
       <div>
-        <DetailNovel _id={Number(params.id)} />
+        <DetailNovel name={params.name} />
       </div>
     </NextUIProvider>
   );

@@ -2,9 +2,10 @@
 // pages/index.tsx
 import React, { useState } from "react";
 import RichTextEditor from "@/components/editor/editor";
-import Navbar from "@/components/navbar/navbar";
+import NavBar from "@/components/navbar/navbar";
 import { Input } from "@nextui-org/react";
 import Footer from "@/components/footer/footer";
+
 
 const editorPage = () => {
   const [content, setContent] = useState<string>("");
@@ -13,11 +14,13 @@ const editorPage = () => {
     setContent(newContent);
   };
 
+  console.log(content)
+
   return (
     <div>
       <nav>
         <div className="relative z-[200] h-[50px] md:h-[60px] ">
-          <Navbar position={"fixed"} />
+          <NavBar position={"fixed"} />
         </div>
       </nav>
       <main>
@@ -37,9 +40,7 @@ const editorPage = () => {
           </div>
         </div>
       </main>
-      <footer className="mt-12">
-        <Footer />
-      </footer>
+     
     </div>
   );
 };

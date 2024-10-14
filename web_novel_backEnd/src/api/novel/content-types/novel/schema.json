@@ -1,0 +1,88 @@
+{
+  "kind": "collectionType",
+  "collectionName": "novels",
+  "info": {
+    "singularName": "novel",
+    "pluralName": "novels",
+    "displayName": "novel",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "rate": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::rate.rate",
+      "inversedBy": "novels"
+    },
+    "detail": {
+      "type": "blocks"
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tag.tag",
+      "mappedBy": "novels"
+    },
+    "chapters": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::chapter.chapter",
+      "mappedBy": "novel"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "novels"
+    },
+    "public": {
+      "type": "boolean",
+      "default": false
+    },
+    "rating": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::rating.rating",
+      "mappedBy": "novel"
+    },
+    "category": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::category.category",
+      "inversedBy": "novels"
+    },
+    "user_favorites": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "favorite_novels"
+    },
+    "image_novel": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "list_novels": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::list-novel.list-novel",
+      "inversedBy": "novels"
+    }
+  }
+}
