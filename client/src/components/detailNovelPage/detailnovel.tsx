@@ -126,7 +126,7 @@ function DetailNovel({ _id }: Props): JSX.Element {
                           <div className="mt-2 space-y-2">
                             {dt.chapter.map((chapter, index) => (
                               <Link
-                                href={`/read/${chapter.id}`}
+                                href={`/chapter/${chapter.id}`}
                                 key={index}
                                 className="chapter"
                               >
