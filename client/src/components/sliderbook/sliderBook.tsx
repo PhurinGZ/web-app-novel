@@ -54,10 +54,12 @@ interface CardProps extends Novel {
 function SliderBook({ dataCardNovel }: Props) {
   const items = dataCardNovel.map((novel) => ({
     id: Number(novel.id),
-    title: novel.name, // Change to novel.title
-    category: novel.category,
-    rate: Number(novel.rate), // Convert rate to number
-    author: novel.author,
+
+    title: novel.attributes.name, // Change to novel.title
+    category: novel.attributes.category?.data?.attributes?.name,
+    rate: novel.attributes.rate.data?.attributes?.name, // Convert rate to number
+    author: novel.attributes.user.data?.attributes.username,
+
   }));
   
 
@@ -154,7 +156,9 @@ function Card({
       }}
       tabIndex={0}
     >
-      <Link href={`/book/${itemId}`} style={{ textDecoration: "none" }}>
+
+      <Link href={`/book/${title}`} style={{ textDecoration: "none" }}>
+
         <div className={`card ${selected ? "selected" : ""} `}>
           <Image
             src={"/image/imageBook1.png"}

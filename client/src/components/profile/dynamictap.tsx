@@ -1,6 +1,12 @@
 import React from "react";
 import { Tabs, Tab, Card, CardBody, CardHeader } from "@nextui-org/react";
 
+import Favorite from "./favorite";
+import useSWR from "swr";
+import Loading from "../loading/loading";
+import { getCookie } from "cookies-next";
+
+
 interface TabItem {
   id: string;
   label: string;
@@ -8,37 +14,50 @@ interface TabItem {
 }
 
 const App: React.FC = () => {
-  let tabs: TabItem[] = [
-    {
-      id: "นิยายรานตอน",
-      label: "นิยายรานตอน",
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    },
-    {
-      id: "Favorite",
-      label: "Favorite",
-      content:
-        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    },
-    {
-      id: "History",
-      label: "History",
-      content:
-        "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    },
-  ];
+
+  const fetcher = (url, token) => {
+    return fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }).then((res) => res.json());
+  };
+
+  const token = getCookie("token");
+
+  const fetcherWithToken = (url) => fetcher(url, token);
+
+  const { data, error } = useSWR(
+    "http://localhost:1337/api/users/me?populate=*",
+    fetcherWithToken
+  );
+  if (!data) return <Loading />;
+  if (error) return <div>{error.message}</div>;
+
+  console.log(data.favorite_novels);
 
   return (
     <div className="flex w-full flex-col">
-      <Tabs aria-label="Dynamic tabs" items={tabs}>
-        {(item: TabItem) => (
-          <Tab key={item.id} title={item.label}>
-            <Card>
-              <CardBody>{item.content}</CardBody>
-            </Card>
-          </Tab>
-        )}
+      <Tabs aria-label="Dynamic tabs">
+        <Tab title="Favorite">
+          {data.favorite_novels.map((fav) => (
+            <Favorite
+              title={fav.name}
+              description={null}
+              key={fav.id}
+              imageUrl={null}
+              name={fav.name}
+            />
+          ))}
+        </Tab>
+        <Tab title="อ่านล่าสุด" isDisabled>
+          <Card>
+            <CardBody></CardBody>
+          </Card>
+        </Tab>
+
       </Tabs>
     </div>
   );
