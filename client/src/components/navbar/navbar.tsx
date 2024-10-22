@@ -1,5 +1,7 @@
 "use client";
+
 import React, { useEffect } from "react";
+
 import {
   Navbar,
   NavbarBrand,
@@ -17,6 +19,7 @@ import {
 } from "@nextui-org/react";
 import AcmeLogo from "./AcmeLogo";
 import Image from "next/image";
+
 import { useUser } from "@/context/UserProvider";
 import { getCookie, deleteCookie } from "cookies-next";
 import Category from "../category/categoy";
@@ -33,6 +36,7 @@ const App = ({ position }) => {
     window.location.href = "/membership";
   };
 
+
   return (
     <Navbar
       className={`bg-navbar-color ${position}`}
@@ -40,6 +44,7 @@ const App = ({ position }) => {
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
     >
+
       {isOpen && <Category />}
       <Image
         src={"/image/list.png"}
@@ -49,6 +54,7 @@ const App = ({ position }) => {
         className="max-w-5 in-h-5 sm:hidden cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
       />
+
 
       <NavbarBrand className="flex space-x-10 ">
         <div className="flex items-center">
@@ -79,6 +85,7 @@ const App = ({ position }) => {
                   />
                   <p className="ml-2">หมวดหมู่</p>
                 </button>
+
               </Link>
             </NavbarItem>
             {/* <NavbarItem isActive>
@@ -94,6 +101,7 @@ const App = ({ position }) => {
           </NavbarContent>
         </div>
       </NavbarBrand>
+
 
       {cookies ? (
         <NavbarContent as="div" justify="end">
@@ -143,6 +151,7 @@ const App = ({ position }) => {
           <Link href="/membership">Login/registe</Link>
         </div>
       )}
+
     </Navbar>
   );
 };

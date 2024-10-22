@@ -35,6 +35,7 @@ function WriterPage() {
           </div>
         </div>
       </main>
+
     </div>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
+
 import React, { useEffect } from "react";
+
 import {
   Tabs,
   Tab,
@@ -10,6 +12,7 @@ import {
   CardBody,
   CardHeader,
 } from "@nextui-org/react";
+
 
 import Footer from "../footer/footer";
 import { getCookie, setCookie } from "cookies-next";
@@ -91,6 +94,7 @@ export default function App() {
       <nav>
         <div className="relative z-[200] h-[50px] md:h-[60px] ">
           <NavBar position={"fixed"} />
+
         </div>
       </nav>
       <main className="mt-12 my-12 md:mt-8 md:my-8">
@@ -107,11 +111,14 @@ export default function App() {
                 <Tab key="login" title="Login">
                   <form className="flex flex-col gap-4">
                     <Input
+
                       value={identifier}
+
                       isRequired
                       label="Email"
                       placeholder="Enter your email"
                       type="email"
+
                       onChange={(e) => onChangeEmail(e.target.value)}
                     />
                     <Input
@@ -121,6 +128,7 @@ export default function App() {
                       placeholder="Enter your password"
                       type="password"
                       onChange={(e) => onChangePassword(e.target.value)}
+
                     />
                     <p className="text-center text-small">
                       Need to create an account?{" "}
@@ -129,11 +137,13 @@ export default function App() {
                       </Link>
                     </p>
                     <div className="flex gap-2 justify-end">
+
                       <Button
                         fullWidth
                         color="primary"
                         onClick={() => handleSubmit()}
                       >
+
                         Login
                       </Button>
                     </div>
@@ -179,5 +189,6 @@ export default function App() {
       </main>
       
     </>
+
   );
 }

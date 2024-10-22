@@ -1,16 +1,22 @@
+
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { Typography, Grid } from "@mui/material";
 import Rating from "@mui/material/Rating";
 import { detailNovel, userReviews } from "../../data/dataDetailNovel"; // Assuming you have a type for userReviews
+
 import NavBar from "@/components/navbar/navbar";
+
 import Image from "next/image";
 import "@/components/detailNovelPage/style.scss";
 import dataCardNovel from "@/data/data";
 import { Link } from "@nextui-org/react";
 import Footer from "../footer/footer";
+
 import useSWR from "swr";
 import Loading from "@/components/loading/loading";
+
 
 // interface userReview {
 //   id: number;
@@ -45,6 +51,7 @@ function DetailNovel({ name }: Props): JSX.Element {
   const [ratingUser, setRatingUser] = useState<number | null>(); // Add type annotation for ratingUser
   const [dataNovel, setDataNovel] = useState<DataCardNovel | null>(null);
 
+
   const handleRatingChange = (
     event: React.ChangeEvent<{}>,
     newValue: number | null
@@ -54,6 +61,7 @@ function DetailNovel({ name }: Props): JSX.Element {
   };
 
   // console.log(ratingUser)
+
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const { data, error } = useSWR(
@@ -114,11 +122,14 @@ function DetailNovel({ name }: Props): JSX.Element {
   //   console.log(dataNovel?.chapters.data);
   // }
 
+
   return (
     <div>
       <nav>
         <div className="relative z-[200] h-[50px] md:h-[60px] ">
+
           <NavBar position={"fixed"} />
+
         </div>
       </nav>
       <main>
@@ -130,6 +141,7 @@ function DetailNovel({ name }: Props): JSX.Element {
                   <div>
                     <h1 className="text-2xl font-bold">Detail Novel</h1>
                   </div>
+
                   <div>
                     <div className="flex items-center mt-4 space-x-4">
                       {/* Image */}
@@ -202,6 +214,7 @@ function DetailNovel({ name }: Props): JSX.Element {
                       </div>
                     </div>
                   </div>
+
                 </div>
               </div>
             </Grid>

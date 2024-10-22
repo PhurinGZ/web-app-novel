@@ -1,4 +1,5 @@
 'use client'
+
 // components/DropdownMenu.js
 import { useState } from 'react';
 
@@ -77,3 +78,4 @@ const DropdownMenu = () => {
 };
 
 export default DropdownMenu;
+

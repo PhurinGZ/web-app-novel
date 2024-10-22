@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import NavBar from "@/components/navbar/navbar";
 import SliderImage from "../sliderImage/sliderImage";
@@ -44,22 +45,26 @@ function HomePage() {
   // console.log(listNovelsData);
   // console.log(dataNovel);
 
+
   return (
     <>
       <nav>
         <div className="relative z-[200] h-[50px] md:h-[60px] ">
+
           <NavBar position={"fixed"} />
         </div>
       </nav>
       <main>
         <div className="pb-24">
           <div className="slider-container-home-page">
+
             <SliderImage />
           </div>
           <div className="searchbar-container-home-page">
             <Searchbar />
           </div>
           <div className="content-home">
+
             {listNovelsData?.data?.map((l) => (
               <div key={l.id} className="content">
                 <h1 className="text-3xl font-bold mb-4">{l.attributes.name}</h1>
@@ -78,6 +83,7 @@ function HomePage() {
         </div>
       </main>
       
+
     </>
   );
 }

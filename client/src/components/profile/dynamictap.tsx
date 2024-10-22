@@ -1,9 +1,11 @@
 import React from "react";
 import { Tabs, Tab, Card, CardBody, CardHeader } from "@nextui-org/react";
+
 import Favorite from "./favorite";
 import useSWR from "swr";
 import Loading from "../loading/loading";
 import { getCookie } from "cookies-next";
+
 
 interface TabItem {
   id: string;
@@ -12,6 +14,7 @@ interface TabItem {
 }
 
 const App: React.FC = () => {
+
   const fetcher = (url, token) => {
     return fetch(url, {
       method: "GET",
@@ -54,6 +57,7 @@ const App: React.FC = () => {
             <CardBody></CardBody>
           </Card>
         </Tab>
+
       </Tabs>
     </div>
   );

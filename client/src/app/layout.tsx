@@ -5,6 +5,7 @@ import UserProvider from "@/context/UserProvider";
 import Footer from "@/components/footer/footer";
 import Navbar from "@/components/navbar/navbar";
 
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ export default function RootLayout({
       <footer>
         <Footer />
       </footer>
+
     </html>
   );
 }

@@ -1,4 +1,6 @@
+
 "use client";
+
 
 import React from "react";
 import ReadNovel from "@/components/readNovel/readNovel";
@@ -14,6 +16,7 @@ function page() {
       <ChapterProvider>
         <ReadNovel _id={Number(params.id)} />
       </ChapterProvider>
+
     </div>
   );
 }

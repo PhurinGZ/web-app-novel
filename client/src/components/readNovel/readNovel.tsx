@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent, useEffect } from "react";
 import { useParams } from "react-router-dom"; // Import useParams
 import novelContent from "../../data/dataContent";
+
 import NavBar from "@/components/navbar/navbar";
 import dataCardNovel from "@/data/data";
 import Footer from "../footer/footer";
@@ -10,6 +11,7 @@ import { Button } from "@nextui-org/button";
 import { Skeleton } from "@nextui-org/react";
 import Loading from "@/components/loading/loading";
 
+
 interface Chapter {
   id: number;
   name: string;
@@ -17,6 +19,7 @@ interface Chapter {
 }
 
 function ReadNovel({ _id }) {
+
   const [dataNovel, setDataNovel] = useState<any>();
   const [name, setName] = useState<string | null>();
 
@@ -74,6 +77,7 @@ function ReadNovel({ _id }) {
         </main>
       )}
      
+
     </div>
   );
 }

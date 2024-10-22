@@ -21,6 +21,8 @@
       "@/*": ["./src/*"]
     }
   },
+
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/book/[name]", "src/app/chapter/[id]/edit"],
+
   "exclude": ["node_modules"]
 }

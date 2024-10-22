@@ -1,10 +1,13 @@
+
 'use client'
 import React, { useEffect } from "react";
 import { Avatar, Link } from "@nextui-org/react";
+
 import NavBar from "@/components/navbar/navbar";
 import Image from "next/image";
 import DinamicTap from "@/components/profile/dynamictap";
 import Footer from "../footer/footer";
+
 import { getCookie, deleteCookie } from "cookies-next";
 import { useUser } from "@/context/UserProvider";
 import { redirect, useParams } from "next/navigation";
@@ -89,6 +92,7 @@ function Profile() {
       {renderContent()}
       
     </>
+
   );
 }
 
