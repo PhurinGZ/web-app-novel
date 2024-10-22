@@ -1,0 +1,17 @@
+[
+    {
+      "name": "Fantasy",
+      "nameThai": "แฟนตาซี",
+      "novels": ["671731a0c4ff0bbeb3420fd6","671731a0c4ff0bbeb3420fd7"],
+      "createdBy": "userObjectId1",
+      "updatedBy": "userObjectId1"
+    },
+    {
+      "name": "Science Fiction",
+      "nameThai": "วิทยาศาสตร์",
+      "novels": [],
+      "createdBy": "userObjectId2",
+      "updatedBy": "userObjectId2"
+    }
+  ]
+  

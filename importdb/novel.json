@@ -1,0 +1,23 @@
+[
+    {
+      "name": "The Magic Realm",
+      "chapters": [],
+      "category": "categoryObjectId1",
+      "rate": "rateObjectId1",
+      "user_favorites": ["userObjectId1", "userObjectId2"],
+      "image_novel": "images/magicrealm.jpg",
+      "createdBy": "userObjectId1",
+      "updatedBy": "userObjectId1"
+    },
+    {
+      "name": "Future of Mars",
+      "chapters": [],
+      "category": "categoryObjectId2",
+      "rate": "rateObjectId2",
+      "user_favorites": ["userObjectId3"],
+      "image_novel": "images/futureofmars.jpg",
+      "createdBy": "userObjectId3",
+      "updatedBy": "userObjectId3"
+    }
+  ]
+  

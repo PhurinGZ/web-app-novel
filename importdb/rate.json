@@ -1,0 +1,15 @@
+[
+    {
+      "name": "5 stars",
+      "novels": ["novelObjectId1"],
+      "createdBy": "userObjectId1",
+      "updatedBy": "userObjectId1"
+    },
+    {
+      "name": "4 stars",
+      "novels": ["novelObjectId2"],
+      "createdBy": "userObjectId3",
+      "updatedBy": "userObjectId3"
+    }
+  ]
+  
