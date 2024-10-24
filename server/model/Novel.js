@@ -19,10 +19,13 @@ const novelSchema = new mongoose.Schema({
   },
   user_favorites: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User' // Many-to-Many relation with User
+    // ref: 'User' // Many-to-Many relation with User
   }],
   image_novel: {
     type: String // Assuming you will store the file path or URL for the image
+  },
+  detail:{
+    type: String
   },
   createdAt: {
     type: Date,

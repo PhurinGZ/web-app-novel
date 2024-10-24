@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -17,7 +16,6 @@ import Footer from "../footer/footer";
 import useSWR from "swr";
 import Loading from "@/components/loading/loading";
 
-
 // interface userReview {
 //   id: number;
 //   userName: string;
@@ -26,7 +24,7 @@ import Loading from "@/components/loading/loading";
 // }
 
 interface Props {
-  name: string;
+  id: Object;
 }
 
 interface DataCardNovel {
@@ -46,11 +44,10 @@ interface DataCardNovel {
   user_faverites: object;
 }
 
-function DetailNovel({ name }: Props): JSX.Element {
+function DetailNovel({ _id }: Props): JSX.Element {
   const [ratingValue, setRatingValue] = useState<number | null>(null); // Add type annotation for ratingValue
   const [ratingUser, setRatingUser] = useState<number | null>(); // Add type annotation for ratingUser
   const [dataNovel, setDataNovel] = useState<DataCardNovel | null>(null);
-
 
   const handleRatingChange = (
     event: React.ChangeEvent<{}>,
@@ -62,16 +59,17 @@ function DetailNovel({ name }: Props): JSX.Element {
 
   // console.log(ratingUser)
 
+  // console.log(_id)
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const { data, error } = useSWR(
-    `http://localhost:1337/api/novels?populate=*&filters[name][$eq]=${name}`,
+    `http://localhost:3001/api/novels/${_id}`,
     fetcher
   );
 
   useEffect(() => {
     if (data) {
-      setDataNovel(data?.data[0]?.attributes);
+      setDataNovel(data);
     }
   }, [data]);
 
@@ -79,6 +77,8 @@ function DetailNovel({ name }: Props): JSX.Element {
 
   if (error) return <div>Failed to load</div>;
   if (!data) return <Loading />;
+
+  console.log(dataNovel);
 
   // useEffect(() => {
 
@@ -122,14 +122,13 @@ function DetailNovel({ name }: Props): JSX.Element {
   //   console.log(dataNovel?.chapters.data);
   // }
 
+  // console.log(dataNovel)
 
   return (
     <div>
       <nav>
         <div className="relative z-[200] h-[50px] md:h-[60px] ">
-
           <NavBar position={"fixed"} />
-
         </div>
       </nav>
       <main>
@@ -156,7 +155,8 @@ function DetailNovel({ name }: Props): JSX.Element {
                       <div>
                         <h1 className="text-xl font-bold">{dataNovel?.name}</h1>
                         <p>
-                          by: {dataNovel?.user.data?.attributes?.username}
+                          by: gg{" "}
+                          {/*{dataNovel?.user.data?.attributes?.username}*/}
                         </p>{" "}
                         {/* Display author */}
                         <p className="text-sm">{dataNovel?.detail}</p>
@@ -167,8 +167,8 @@ function DetailNovel({ name }: Props): JSX.Element {
                       <h2 className="text-lg font-semibold">Chapters</h2>{" "}
                       {/* Corrected heading */}
                       <div className="mt-2 space-y-2">
-                        {dataNovel && dataNovel.chapters.data.length !== 0 ? (
-                          dataNovel.chapters.data.map((chapter, index) => (
+                        {dataNovel && dataNovel.chapters.length !== 0 ? (
+                          dataNovel.chapters.map((chapter, index) => (
                             <Link
                               href={`/chapter/${chapter.id}`}
                               key={index}
@@ -180,21 +180,27 @@ function DetailNovel({ name }: Props): JSX.Element {
                             </Link>
                           ))
                         ) : (
-                          <div className="text-center text-gray-500 mt-4 text-2xl">ไม่มีตอน</div>
+                          <div className="text-center text-gray-500 mt-4 text-2xl">
+                            ไม่มีตอน
+                          </div>
                         )}
                       </div>
                     </div>
 
                     <div className="review mt-6 min-h-[300px]">
-                      <div className="total-review h-full">
-                        <Rating
-                          name="controlled-rating"
-                          value={ratingUser}
-                          onChange={handleRatingChange}
-                          precision={0.5}
-                          readOnly
-                        />
-                        <p className="text-sm">Current Rating: {ratingUser}</p>
+                      <div className="total-review h-[300px]">
+                        <div className="h-full flex flex-col justify-center items-center">
+                          <Rating
+                            name="controlled-rating"
+                            value={ratingUser}
+                            onChange={handleRatingChange}
+                            precision={0.5}
+                            readOnly
+                          />
+                          <p className="text-sm">
+                            Current Rating: {ratingUser}
+                          </p>
+                        </div>
                       </div>
                       <div className="review-user mt-4">
                         {/* {dt.rating.map((rat, index) => (
@@ -214,14 +220,12 @@ function DetailNovel({ name }: Props): JSX.Element {
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </Grid>
           </Grid>
         </div>
       </main>
-      
     </div>
   );
 }

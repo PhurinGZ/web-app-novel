@@ -15,7 +15,7 @@ export default function ExampleClientComponent() {
   return (
     <NextUIProvider>
       <div>
-        <DetailNovel _id={Number(params.id)} />
+        <DetailNovel _id={params.id} />
       </div>
     </NextUIProvider>
   );
