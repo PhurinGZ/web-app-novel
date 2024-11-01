@@ -15,13 +15,7 @@ import Footer from "../footer/footer";
 
 import useSWR from "swr";
 import Loading from "@/components/loading/loading";
-
-// interface userReview {
-//   id: number;
-//   userName: string;
-//   review: string;
-//   rate: number;
-// }
+import { useChapter } from "@/context/dropdownReadNovelProvider";
 
 interface Props {
   id: Object;
@@ -48,6 +42,7 @@ function DetailNovel({ _id }: Props): JSX.Element {
   const [ratingValue, setRatingValue] = useState<number | null>(null); // Add type annotation for ratingValue
   const [ratingUser, setRatingUser] = useState<number | null>(); // Add type annotation for ratingUser
   const [dataNovel, setDataNovel] = useState<DataCardNovel | null>(null);
+  // const { setId } = useChapter();
 
   const handleRatingChange = (
     event: React.ChangeEvent<{}>,
@@ -66,10 +61,12 @@ function DetailNovel({ _id }: Props): JSX.Element {
     `http://localhost:3001/api/novels/${_id}`,
     fetcher
   );
-
+  
+  // console.log(data)
   useEffect(() => {
-    if (data) {
+    if (data && _id) {
       setDataNovel(data);
+      // setId(data._id)
     }
   }, [data]);
 
@@ -79,50 +76,6 @@ function DetailNovel({ _id }: Props): JSX.Element {
   if (!data) return <Loading />;
 
   console.log(dataNovel);
-
-  // useEffect(() => {
-
-  //   setDataNovel(data)
-
-  // //   const filteredReviews = dataCardNovel.filter(
-  // //     (review) => review.name === _id
-  // //   );
-
-  // //   const cal_rating = (reviews) => {
-  // //     if (reviews.length === 0) {
-  // //       // No reviews found for this ID
-  // //       setRatingUser(0);
-  // //       return;
-  // //     }
-
-  // //     console.log(reviews);
-
-  // //     let totalRatings = 0;
-  // //     let totalNumberOfRatings = 0;
-
-  // //     reviews.forEach((review) => {
-  // //       totalNumberOfRatings += review.rating.length;
-  // //       totalRatings += review.rating.reduce((a, b) => a + b, 0);
-  // //     });
-
-  // //     const totalRating = totalRatings / totalNumberOfRatings;
-
-  // //     console.log(totalRating);
-  // //     let totalRatingFormatted: number = parseFloat(totalRating.toFixed(2));
-  // //     setRatingUser(totalRatingFormatted);
-  // //   };
-
-  // //   cal_rating(filteredReviews);
-  // }, [data]);
-
-  // console.log(dataNovel?.chapters.data[0].attributes.content[0].children[0].text);
-  // console.log(dataNovel?.chapters.data);
-
-  // if (dataNovel?.chapters?.data.length !== 0) {
-  //   console.log(dataNovel?.chapters.data);
-  // }
-
-  // console.log(dataNovel)
 
   return (
     <div>
@@ -170,12 +123,12 @@ function DetailNovel({ _id }: Props): JSX.Element {
                         {dataNovel && dataNovel.chapters.length !== 0 ? (
                           dataNovel.chapters.map((chapter, index) => (
                             <Link
-                              href={`/chapter/${chapter.id}`}
+                              href={`/chapter/${chapter._id}`}
                               key={index}
                               className="chapter"
                             >
                               <h3 className="chapter-title">
-                                Chapter {chapter?.attributes?.name}
+                                {chapter?.name}
                               </h3>{" "}
                             </Link>
                           ))

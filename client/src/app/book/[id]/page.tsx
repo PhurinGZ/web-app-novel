@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import DetailNovel from "@/components/detailNovelPage/detailnovel";
 import { NextUIProvider } from "@nextui-org/react";
+import { ChapterProvider } from "@/context/dropdownReadNovelProvider";
 
 export default function ExampleClientComponent() {
   const params = useParams<{ id: string }>();
@@ -14,9 +15,11 @@ export default function ExampleClientComponent() {
 
   return (
     <NextUIProvider>
-      <div>
-        <DetailNovel _id={params.id} />
-      </div>
+      <ChapterProvider>
+        <div>
+          <DetailNovel _id={params.id} />
+        </div>
+      </ChapterProvider>
     </NextUIProvider>
   );
 }

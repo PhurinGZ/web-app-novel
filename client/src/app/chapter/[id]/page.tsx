@@ -5,7 +5,7 @@
 import React from "react";
 import ReadNovel from "@/components/readNovel/readNovel";
 import { useParams } from "next/navigation";
-import { ChapterProvider } from "@/context/dropdownReadNovelProvider";
+// import { ChapterProvider } from "@/context/dropdownReadNovelProvider";
 
 function page() {
   const params = useParams<{ id: string }>();
@@ -13,9 +13,7 @@ function page() {
 
   return (
     <div>
-      <ChapterProvider>
-        <ReadNovel _id={Number(params.id)} />
-      </ChapterProvider>
+        <ReadNovel _id={params.id} />
 
     </div>
   );

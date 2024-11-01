@@ -16,19 +16,19 @@ export const ChapterProvider = ({ children }) => {
 //       ? parseInt(localStorage.getItem("currentChapterIndex"))
 //       : 0;
 //   });
-  const [name, setName] = useState();
+  const [id, setId] = useState();
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const { data, error } = useSWR(
-    `http://localhost:1337/api/novels?filters[name][$eq]=${name}&populate=*`,
+    `localhost:3001/api/novels/${id}`,
     fetcher
   );
 
-  console.log(dataDrop)
+  // console.log(id)
 
   useEffect(() => {
     if (data) {
-      setDataDrop(data?.data[0]?.attributes?.chapters.data);
+      setDataDrop(data.chapter);
     }
   }, [data]);
 
@@ -45,7 +45,7 @@ export const ChapterProvider = ({ children }) => {
     <ChapterContext.Provider
       value={{
         dataDrop,
-        setName
+        setId
       }}
     >
       {children}

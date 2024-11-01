@@ -1,107 +1,97 @@
-//dropdown.tsx
 import { Button, Select, SelectItem } from "@nextui-org/react";
-import { useChapter } from "@/context/dropdownReadNovelProvider";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import useSWR from "swr";
 
-const Dropdown = ({ name, id }) => {
-  const { dataDrop, setName } = useChapter();
+interface DropdownProps {
+  novelId: string; // Updated type
+  id: String;
+}
+
+const Dropdown = ({ novelId, id }: DropdownProps) => {
   const router = useRouter();
+  const [selectedChapterId, setSelectedChapterId] = useState(id);
+  const [dataDrop, setDataDrop] = useState<any[]>([]);
 
-  // Initialize currentChapterIndex based on the provided id prop
-  useEffect(() => {
-    if (dataDrop && id) {
-      const index = dataDrop.findIndex((chapter) => chapter.id === id);
-      setCurrentChapterIndex(index !== -1 ? index : 0);
-    }
-  }, [id, dataDrop]);
-
-  const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
-
-  const handleChapterChange = (index) => {
-    if (dataDrop) {
-      const chapterId = parseInt(index);
-      router.push(`/chapter/${chapterId}`);
-    }
-  };
-
-  const handlePreviousChapter = () => {
-    const prevIndex = currentChapterIndex - 1;
-    setCurrentChapterIndex(prevIndex);
-    if (prevIndex >= 0 && dataDrop[prevIndex]) {
-      const prevId = dataDrop[prevIndex].id;
-      router.push(`/chapter/${prevId}`);
-    }
-  };
-
-  const handleNextChapter = () => {
-    const nextIndex = currentChapterIndex + 1;
-    setCurrentChapterIndex(nextIndex);
-    if (nextIndex < dataDrop.length && dataDrop[nextIndex]) {
-      const nextId = dataDrop[nextIndex].id;
-      router.push(`/chapter/${nextId}`);
-    }
-  };
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const { data, error } = useSWR(
+    `http://localhost:3001/api/novels/${novelId}`,
+    fetcher
+  );
 
   useEffect(() => {
-    if (name) {
-      setName(name);
+    if (data) {
+      console.log("Data received:", data);
+      if (data.chapters) {
+        setDataDrop(data?.chapters);
+      }
     }
-  });
+  }, [data]);
 
-  // Render the component
+  console.log(dataDrop);
+
+  if (error) return <div>Error loading data</div>;
+  if (!data) return <div>Loading...</div>;
+
+  const currentChapterIndex = dataDrop.findIndex(
+    (chapter) => chapter._id === selectedChapterId
+  );
+  const isPreviousDisabled = currentChapterIndex <= 0;
+  const isNextDisabled = currentChapterIndex >= dataDrop.length - 1;
+
+  const handleSelectChange = (value: string) => {
+    const selected = dataDrop[currentChapterIndex]
+    setSelectedChapterId(selected._id);
+    router.push(`/chapter/${value}`);
+    console.log(selected._id)
+  };
+
+  const handlePrevious = () => {
+    if (!isPreviousDisabled) {
+      const previousChapter = dataDrop[currentChapterIndex - 1];
+      setSelectedChapterId(previousChapter._id);
+      router.push(`/chapter/${previousChapter._id}`);
+    }
+  };
+
+  const handleNext = () => {
+    if (!isNextDisabled) {
+      const nextChapter = dataDrop[currentChapterIndex + 1];
+      setSelectedChapterId(nextChapter._id);
+      router.push(`/chapter/${nextChapter._id}`);
+    }
+  };
+
   return (
     <div className="bg-white rounded-t-lg p-3 border-b sticky top-0 z-10 h-18">
       <div className="flex flex-col md:flex-row items-center justify-between">
         <div className="w-full md:w-auto mb-2 md:mb-0">
-          {dataDrop && (
-            <Select
-              label="Chapter"
-              placeholder="Select chapter"
-              className="w-full md:w-96"
-              value={id}
-              onChange={(e) => handleChapterChange(parseInt(e.target.value))}
-              selectedKeys={[id]}
-              size="sm"
-            >
-              {dataDrop.map((chapter, index) => (
-                <SelectItem
-                  key={chapter.id}
-                  value={index}
-                  style={{
-                    backgroundColor: chapter.id === id ? "orange" : "white",
-                    cursor: chapter.id === id ? "context-menu" : "pointer",
-                  }}
-                >
-                  {chapter.attributes.name}
-                </SelectItem>
-              ))}
-            </Select>
-          )}
+          <Select
+            label="Chapter"
+            placeholder="Select chapter"
+            className="w-full md:w-96"
+            selectedKeys={[selectedChapterId]}
+            onChange={e => handleSelectChange(e.target.value)}
+            size="sm"
+          >
+            {dataDrop.map((chapter) => (
+              <SelectItem key={chapter._id} value={chapter._id}>
+                {chapter.name}
+              </SelectItem>
+            ))}
+          </Select>
         </div>
         <div className="flex w-full md:w-auto justify-between md:justify-end space-x-2">
           <Button
-            onClick={handlePreviousChapter}
-            disabled={currentChapterIndex === 0}
-            style={{
-              background: currentChapterIndex === 0 ? "#e5e7eb" : "",
-              cursor: currentChapterIndex === 0 ? "not-allowed" : "pointer",
-            }}
+            onClick={handlePrevious}
+            disabled={isPreviousDisabled}
             className="w-full md:w-auto"
           >
             Previous
           </Button>
           <Button
-            onClick={handleNextChapter}
-            disabled={currentChapterIndex === dataDrop?.length - 1}
-            style={{
-              background:
-                currentChapterIndex === dataDrop?.length - 1 ? "#e5e7eb" : "",
-              cursor:
-                currentChapterIndex === dataDrop?.length - 1
-                  ? "not-allowed"
-                  : "pointer",
-            }}
+            onClick={handleNext}
+            disabled={isNextDisabled}
             className="w-full md:w-auto"
           >
             Next
