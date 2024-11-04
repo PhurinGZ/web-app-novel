@@ -42,7 +42,7 @@ interface DataCardNovel {
 }
 
 function DetailNovel({ _id }: Props): JSX.Element {
-  const { data: session } = useSession(); // Get session data
+  const { data: session, status } = useSession(); // Get session data
   const [ratingValue, setRatingValue] = useState<number | null>(null); // Add type annotation for ratingValue
   const [ratingUser, setRatingUser] = useState<number | null>(); // Add type annotation for ratingUser
   const [dataNovel, setDataNovel] = useState<DataCardNovel | null>(null);
@@ -67,6 +67,8 @@ function DetailNovel({ _id }: Props): JSX.Element {
     fetcher
   );
 
+  // console.log(dataNovel?.user_faverites?.length);
+
   // console.log(data)
   useEffect(() => {
     if (data && _id) {
@@ -76,10 +78,24 @@ function DetailNovel({ _id }: Props): JSX.Element {
   }, [data]);
 
   const toggleFavorite = async () => {
-    setIsFavorited(!isFavorited);
+    if (status === "unauthenticated") {
+      alert("Please log in to favorite this novel."); // Alert or redirect to login
+      return; // Exit the function if not logged in
+    }
+
+    // Optimistically update the favorite state locally
+    const updatedFavorites = isFavorited
+      ? dataNovel.user_favorites.filter((userId) => userId !== session.user.id) // Remove user's ID
+      : [...dataNovel.user_favorites, session.user.id]; // Add user's ID
+
+    setDataNovel((prev) => ({
+      ...prev,
+      user_favorites: updatedFavorites, // Update state with new favorites
+    }));
+
+    setIsFavorited(!isFavorited); // Toggle the favorited state
 
     try {
-      // console.log(dataNovel?._id)
       if (dataNovel && dataNovel._id) {
         const response = await fetch("/api/favorite", {
           method: "POST",
@@ -89,11 +105,10 @@ function DetailNovel({ _id }: Props): JSX.Element {
           body: JSON.stringify({ novelId: dataNovel._id }), // Send the novel ID to the API
         });
 
-        console.log(dataNovel._id);
-
         const result = await response.json();
 
         if (response.ok) {
+          // Update the favorite status based on the response
           setIsFavorited(result.isFavorited);
         } else {
           console.error("Failed to update favorite status:", result.message);
@@ -150,7 +165,7 @@ function DetailNovel({ _id }: Props): JSX.Element {
                         {/* Display author */}
                         <p className="text-sm">{dataNovel?.detail}</p>
                       </div>
-                      <div className="w-full flex justify-end p-4 self-start">
+                      <div className="w-full flex flex-col items-end p-4 self-start">
                         <button
                           onClick={toggleFavorite}
                           className={`p-2 rounded-full transition-colors duration-200 ${
@@ -166,6 +181,22 @@ function DetailNovel({ _id }: Props): JSX.Element {
                             <HeartIconOutline className="w-6 h-6" />
                           )}
                         </button>
+
+                        {/* Display the number of users who have favorited this novel */}
+                        <p className="text-sm text-gray-600 mt-2">
+                          {dataNovel && dataNovel.user_favorites ? (
+                            dataNovel.user_favorites.length > 0 ? (
+                              <span>
+                                {dataNovel.user_favorites.length} users
+                                favorited this novel
+                              </span>
+                            ) : (
+                              <span>No users have favorited this novel.</span>
+                            )
+                          ) : (
+                            <span>Error: Data not available.</span>
+                          )}
+                        </p>
                       </div>
                     </div>
 

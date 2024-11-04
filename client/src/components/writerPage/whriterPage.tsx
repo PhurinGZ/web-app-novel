@@ -11,11 +11,6 @@ import Image from "next/image";
 function WriterPage() {
   return (
     <div>
-      <nav>
-        <div className="relative z-50 h-16 md:h-20">
-          <NavBar position="fixed" />
-        </div>
-      </nav>
       <main>
         <div className="container mx-auto py-8">
           <div className="flex justify-between">
@@ -35,7 +30,6 @@ function WriterPage() {
           </div>
         </div>
       </main>
-
     </div>
   );
 }

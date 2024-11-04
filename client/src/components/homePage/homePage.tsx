@@ -40,12 +40,6 @@ function HomePage() {
 
   return (
     <>
-      {/* <nav>
-        <div className="relative z-[200] h-[50px] md:h-[60px] ">
-
-          <NavBar position={"fixed"} />
-        </div>
-      </nav> */}
       <main>
         <div className="pb-24">
           <div className="slider-container-home-page">

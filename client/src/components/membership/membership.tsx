@@ -16,6 +16,7 @@ import NavBar from "@/components/navbar/navbar";
 import { signIn } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import Loading from "../loading/loading";
 
 interface LoginResponse {
   jwt: string;
@@ -34,6 +35,7 @@ export default function App() {
     password: "",
   });
   const { data: session, status } = useSession();
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
@@ -49,6 +51,8 @@ export default function App() {
   // handle submit Signin
   const handleSubmitSignin = async (e) => {
     e.preventDefault();
+
+    setLoading(true);
 
     const res = await signIn("credentials", {
       redirect: false,
@@ -67,8 +71,15 @@ export default function App() {
     }
   };
 
+  if (status === "loading" || loading) {
+    return <Loading />; // Show loading if status is loading or loading state is true
+  }
+
   //handle submit Signup
   const handleSubmitSignup = async (e) => {
+
+    setLoading(true);
+
     e.preventDefault();
     const res = await fetch("http://localhost:3000/api/signup", {
       method: "POST",
@@ -78,6 +89,9 @@ export default function App() {
     if (res.ok) {
       setSelected("login");
     } else {
+
+      setLoading(false);
+
       // Parse the response to get the message
       const data = await res.json();
       alert(data.message || "Signup failed");
