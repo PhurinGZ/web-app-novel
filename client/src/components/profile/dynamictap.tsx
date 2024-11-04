@@ -49,9 +49,7 @@ const App: React.FC = () => {
     <div className="flex w-full flex-col">
       <Tabs aria-label="Dynamic tabs">
         <Tab title="Favorite">
-          {!dataNovel?.user?.novel_favorites?.length ? (
-            <div>ไม่มีนิยายที่ชอบ</div>
-          ) : (
+          {dataNovel?.user?.novel_favorites?.length ? (
             dataNovel.user.novel_favorites.map((fav) => (
               <Favorite
                 key={fav.id}
@@ -61,6 +59,8 @@ const App: React.FC = () => {
                 id={fav._id}
               />
             ))
+          ) : (
+            <div>ไม่มีนิยายที่ชอบ</div>
           )}
         </Tab>
         <Tab title="อ่านล่าสุด" isDisabled>
