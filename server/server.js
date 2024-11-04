@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require("cors");
+const dbConnect = require("./utils/dbConnect")
 
 require('dotenv').config();
 
@@ -13,9 +14,10 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Connect to MongoDB
-mongoose.connect(process.env.MongodbURL)
-  .then(() => console.log('MongoDB connected successfully'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// mongoose.connect(process.env.MongodbURL)
+//   .then(() => console.log('MongoDB connected successfully'))
+//   .catch(err => console.error('MongoDB connection error:', err));
+dbConnect()
 
 // Routes
 const categoryRoutes = require('./routes/category');

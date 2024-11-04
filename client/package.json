@@ -21,10 +21,13 @@
     "@nextui-org/react": "^2.3.6",
     "@types/quill": "^2.0.14",
     "@types/react-slick": "^0.23.13",
+    "bcryptjs": "^2.4.3",
     "cookies-next": "^4.1.1",
     "framer-motion": "^11.1.7",
     "jwt-decode": "^4.0.0",
-    "next": "14.1.4",
+    "mongoose": "^8.8.0",
+    "next": "^14.2.16",
+    "next-auth": "^4.24.10",
     "punycode": "^2.3.1",
     "react": "^18",
     "react-autosuggest": "^10.1.0",
@@ -38,6 +41,7 @@
     "swr": "^2.2.5"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-autosuggest": "^10.1.11",

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useState,useEffect } from "react";
 
 import {
   Tabs,
@@ -12,81 +12,77 @@ import {
   CardBody,
   CardHeader,
 } from "@nextui-org/react";
-
-
-import Footer from "../footer/footer";
-import { getCookie, setCookie } from "cookies-next";
 import NavBar from "@/components/navbar/navbar";
-import { useUser } from "@/context/UserProvider";
-import { redirect } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { redirect, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface LoginResponse {
   jwt: string;
 }
 
 export default function App() {
-  const [selected, setSelected] = React.useState<string | number>("login");
-  const [identifier, setIdentifier] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [loginsucess, setLoginsucess] = React.useState(false);
-  const { updateUser, user } = useUser();
+  const [selected, setSelected] = useState<string | number>("login");
+  const [formDataSignin, setFormDataSignin] = useState({
+    email: "",
+    password: "",
+  });
+  const [loginsucess, setLoginsucess] = useState(false);
+  const [formDataSignup, setFormDataSignup] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const { data: session,status } = useSession();
 
-  const cookie = getCookie("token");
+  const router = useRouter();
 
-  const onChangePassword = (v) => {
-    setPassword(v);
-  };
-
-  const onChangeEmail = (v) => {
-    setIdentifier(v);
-  };
+  console.log("session ", session)
+  console.log("status ", status)
 
   useEffect(() => {
-    if (cookie) {
-      setLoginsucess(true);
-      redirect("/");
+    if (status === "authenticated") {
+      redirect("/")
     }
-  }, [cookie]);
+  }, [status]);
 
-  const handleLogin = async (
-    identifier: string,
-    password: string
-  ): Promise<void> => {
-    try {
-      const res = await fetch("http://localhost:1337/api/auth/local", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ identifier, password }),
-      });
+  // handle submit Signin
+  const handleSubmitSignin = async (e) => {
+    e.preventDefault();
 
-      if (!res.ok) {
-        throw new Error("Failed to login");
-      }
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: formDataSignin.email,
+      password: formDataSignin.password,
+    });
 
-      const data: LoginResponse = await res.json();
-      const { jwt, user } = data;
+    if (res.ok) {
+      router.push("/");
+    }
 
-      console.log(user);
-
-      updateUser(user);
-
-      // console.log(user?.username)
-
-      // window.location.reload();
-
-      // Set cookie
-      setCookie("token", jwt, {
-        expires: new Date(Date.now() + 60 * 60 * 24 * 3),
-      });
-    } catch (error) {
-      console.error("Error during login:", error);
+    if (!res.error) {
+      // handle success (e.g., redirect to a protected page)
+    } else {
+      alert("Signin failed");
     }
   };
 
-  const handleSubmit = async () => {
-    await handleLogin(identifier, password);
+  //handle submit Signup
+  const handleSubmitSignup = async (e) => {
+    e.preventDefault();
+    const res = await fetch("http://localhost:3000/api/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formDataSignup),
+    });
+    if (res.ok) {
+      setSelected("login");
+    } else {
+      // Parse the response to get the message
+      const data = await res.json();
+      alert(data.message || "Signup failed");
+      console.log(data.message);
+    }
   };
 
   return (
@@ -94,7 +90,6 @@ export default function App() {
       <nav>
         <div className="relative z-[200] h-[50px] md:h-[60px] ">
           <NavBar position={"fixed"} />
-
         </div>
       </nav>
       <main className="mt-12 my-12 md:mt-8 md:my-8">
@@ -109,26 +104,35 @@ export default function App() {
                 onSelectionChange={setSelected}
               >
                 <Tab key="login" title="Login">
-                  <form className="flex flex-col gap-4">
+                  <form
+                    className="flex flex-col gap-4"
+                    onSubmit={handleSubmitSignin}
+                  >
                     <Input
-
-                      value={identifier}
-
+                      value={formDataSignin.email}
                       isRequired
                       label="Email"
                       placeholder="Enter your email"
                       type="email"
-
-                      onChange={(e) => onChangeEmail(e.target.value)}
+                      onChange={(e) =>
+                        setFormDataSignin({
+                          ...formDataSignin,
+                          email: e.target.value,
+                        })
+                      }
                     />
                     <Input
                       isRequired
-                      value={password}
+                      value={formDataSignin.password}
                       label="Password"
                       placeholder="Enter your password"
                       type="password"
-                      onChange={(e) => onChangePassword(e.target.value)}
-
+                      onChange={(e) =>
+                        setFormDataSignin({
+                          ...formDataSignin,
+                          password: e.target.value,
+                        })
+                      }
                     />
                     <p className="text-center text-small">
                       Need to create an account?{" "}
@@ -137,37 +141,55 @@ export default function App() {
                       </Link>
                     </p>
                     <div className="flex gap-2 justify-end">
-
-                      <Button
-                        fullWidth
-                        color="primary"
-                        onClick={() => handleSubmit()}
-                      >
-
+                      <Button fullWidth color="primary" type="submit">
                         Login
                       </Button>
                     </div>
                   </form>
                 </Tab>
                 <Tab key="sign-up" title="Sign up">
-                  <form className="flex flex-col gap-4 h-[300px]">
+                  <form
+                    className="flex flex-col gap-4 h-[300px]"
+                    onSubmit={handleSubmitSignup}
+                  >
                     <Input
                       isRequired
                       label="Name"
                       placeholder="Enter your name"
-                      type="password"
+                      type="text"
+                      onChange={(e) =>
+                        setFormDataSignup({
+                          ...formDataSignup,
+                          username: e.target.value,
+                        })
+                      }
+                      required
                     />
                     <Input
                       isRequired
                       label="Email"
                       placeholder="Enter your email"
                       type="email"
+                      onChange={(e) =>
+                        setFormDataSignup({
+                          ...formDataSignup,
+                          email: e.target.value,
+                        })
+                      }
+                      required
                     />
                     <Input
                       isRequired
                       label="Password"
                       placeholder="Enter your password"
                       type="password"
+                      onChange={(e) =>
+                        setFormDataSignup({
+                          ...formDataSignup,
+                          password: e.target.value,
+                        })
+                      }
+                      required
                     />
                     <p className="text-center text-small">
                       Already have an account?{" "}
@@ -176,7 +198,7 @@ export default function App() {
                       </Link>
                     </p>
                     <div className="flex gap-2 justify-end">
-                      <Button fullWidth color="primary">
+                      <Button fullWidth color="primary" type="submit">
                         Sign up
                       </Button>
                     </div>
@@ -187,8 +209,6 @@ export default function App() {
           </Card>
         </div>
       </main>
-      
     </>
-
   );
 }

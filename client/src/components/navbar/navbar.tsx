@@ -19,23 +19,16 @@ import {
 } from "@nextui-org/react";
 import AcmeLogo from "./AcmeLogo";
 import Image from "next/image";
-
-import { useUser } from "@/context/UserProvider";
-import { getCookie, deleteCookie } from "cookies-next";
 import Category from "../category/categoy";
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 const App = ({ position }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const cookies = getCookie("token");
-  const { user } = useUser();
+
   // console.log(user?.username);
   const [isOpen, setIsOpen] = React.useState(false);
-
-  const handleLogout = () => {
-    deleteCookie("token", { path: "/" });
-    window.location.href = "/membership";
-  };
-
+  const {data : Session} = useSession()
 
   return (
     <Navbar
@@ -103,7 +96,7 @@ const App = ({ position }) => {
       </NavbarBrand>
 
 
-      {cookies ? (
+      {Session ? (
         <NavbarContent as="div" justify="end">
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
@@ -121,10 +114,10 @@ const App = ({ position }) => {
               <DropdownItem
                 key="profile"
                 className="h-14 gap-2"
-                href={`/profile/${user?.username}`}
+                href={`/profile`}
               >
                 <p className="font-semibold">Signed in as</p>
-                <p className="font-semibold">{user?.email}</p>
+                <p className="font-semibold">{Session?.user?.email}</p>
               </DropdownItem>
               <DropdownItem key="system" href="/whriter">
                 นักเขียน
@@ -139,7 +132,7 @@ const App = ({ position }) => {
               <DropdownItem
                 key="logout"
                 color="danger"
-                onClick={() => handleLogout()}
+                onClick={() => signOut()}
               >
                 Log Out
               </DropdownItem>

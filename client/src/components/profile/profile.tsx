@@ -1,47 +1,28 @@
-
-'use client'
+"use client";
 import React, { useEffect } from "react";
 import { Avatar, Link } from "@nextui-org/react";
 
 import NavBar from "@/components/navbar/navbar";
 import Image from "next/image";
 import DinamicTap from "@/components/profile/dynamictap";
-import Footer from "../footer/footer";
-
-import { getCookie, deleteCookie } from "cookies-next";
-import { useUser } from "@/context/UserProvider";
 import { redirect, useParams } from "next/navigation";
 import Loading from "@/components/loading/loading";
 import NotFound404 from "../notFound/404NotFound";
+import { useSession } from "next-auth/react";
 
 function Profile() {
-  const cookies = getCookie("token");
-  const { user } = useUser();
-  const params = useParams<{ uniqeName: string }>();
-
-  useEffect(() => {
-    if (!cookies) {
-      redirect("/membership");
-    }
-  });
-
-
-  // if (!user) {
-  //   return <Loading />;
-  // }
-
-  // if (params.uniqeName !== user?.username) {
-  //   return <NotFound404 />;
-  // }
+  const { data: session, status } = useSession();
 
   const renderContent = () => {
-    if (!user) {
+    if (status === "loading") {
       return <Loading />;
     }
 
-  
+    if (status === "unauthenticated") {
+      redirect("/membership");
+    }
 
-    if (params.uniqeName === user?.username) {
+    if (status === "authenticated" && session.user) {
       return (
         <main className="mt-12 md:mt-8">
           <div className="py-8 px-4 md:px-8">
@@ -64,9 +45,9 @@ function Profile() {
                 <div className="flex p-4 items-center">
                   <div>
                     <h1 className="text-xl font-semibold text-gray-800">
-                      {user.username}
+                      {session?.user?.name}
                     </h1>
-                    <p className="text-gray-600">{user.email}</p>
+                    <p className="text-gray-600">{session?.user?.email}</p>
                   </div>
                 </div>
               </div>
@@ -90,9 +71,7 @@ function Profile() {
         </div>
       </nav>
       {renderContent()}
-      
     </>
-
   );
 }
 
