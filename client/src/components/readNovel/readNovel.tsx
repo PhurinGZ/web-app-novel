@@ -37,9 +37,6 @@ function ReadNovel({ _id }) {
   return (
     <div>
       <head>{dataNovel?.name && <title>{dataNovel.name}</title>}</head>
-      <nav>
-        <NavBar position={"relative"} />
-      </nav>
       {!data ? (
         <Loading />
       ) : (

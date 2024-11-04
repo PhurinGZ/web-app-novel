@@ -16,6 +16,9 @@ import Footer from "../footer/footer";
 import useSWR from "swr";
 import Loading from "@/components/loading/loading";
 import { useChapter } from "@/context/dropdownReadNovelProvider";
+import { HeartIcon as HeartIconOutline } from "@heroicons/react/24/outline";
+import { HeartIcon as HeartIconSolid } from "@heroicons/react/24/solid";
+import { useSession } from "next-auth/react"; // Import useSession to get session data
 
 interface Props {
   id: Object;
@@ -39,10 +42,12 @@ interface DataCardNovel {
 }
 
 function DetailNovel({ _id }: Props): JSX.Element {
+  const { data: session } = useSession(); // Get session data
   const [ratingValue, setRatingValue] = useState<number | null>(null); // Add type annotation for ratingValue
   const [ratingUser, setRatingUser] = useState<number | null>(); // Add type annotation for ratingUser
   const [dataNovel, setDataNovel] = useState<DataCardNovel | null>(null);
   // const { setId } = useChapter();
+  const [isFavorited, setIsFavorited] = useState(false);
 
   const handleRatingChange = (
     event: React.ChangeEvent<{}>,
@@ -61,7 +66,7 @@ function DetailNovel({ _id }: Props): JSX.Element {
     `http://localhost:3001/api/novels/${_id}`,
     fetcher
   );
-  
+
   // console.log(data)
   useEffect(() => {
     if (data && _id) {
@@ -69,6 +74,42 @@ function DetailNovel({ _id }: Props): JSX.Element {
       // setId(data._id)
     }
   }, [data]);
+
+  const toggleFavorite = async () => {
+    setIsFavorited(!isFavorited);
+
+    try {
+      // console.log(dataNovel?._id)
+      if (dataNovel && dataNovel._id) {
+        const response = await fetch("/api/favorite", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ novelId: dataNovel._id }), // Send the novel ID to the API
+        });
+
+        console.log(dataNovel._id);
+
+        const result = await response.json();
+
+        if (response.ok) {
+          setIsFavorited(result.isFavorited);
+        } else {
+          console.error("Failed to update favorite status:", result.message);
+        }
+      }
+    } catch (error) {
+      console.error("An error occurred while updating favorite status:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (data && _id) {
+      setDataNovel(data);
+      setIsFavorited(data.user_favorites.includes(session?.user.id)); // Check if the user has favorited the novel
+    }
+  }, [data, session]);
 
   // console.log(data?.data[0].attributes);
 
@@ -79,12 +120,7 @@ function DetailNovel({ _id }: Props): JSX.Element {
 
   return (
     <div>
-      {/* <nav>
-        <div className="relative z-[200] h-[50px] md:h-[60px] ">
-          <NavBar position={"fixed"} />
-        </div>
-      </nav> */}
-      <main>
+      <div>
         <div className="pb-12">
           <Grid container>
             <Grid item xs={12}>
@@ -105,7 +141,7 @@ function DetailNovel({ _id }: Props): JSX.Element {
                         height={100}
                       />
                       {/* Text */}
-                      <div>
+                      <div className="w-full">
                         <h1 className="text-xl font-bold">{dataNovel?.name}</h1>
                         <p>
                           by: gg{" "}
@@ -113,6 +149,23 @@ function DetailNovel({ _id }: Props): JSX.Element {
                         </p>{" "}
                         {/* Display author */}
                         <p className="text-sm">{dataNovel?.detail}</p>
+                      </div>
+                      <div className="w-full flex justify-end p-4 self-start">
+                        <button
+                          onClick={toggleFavorite}
+                          className={`p-2 rounded-full transition-colors duration-200 ${
+                            isFavorited
+                              ? "text-red-500 bg-red-100"
+                              : "text-gray-500 bg-gray-100"
+                          } hover:bg-red-200 focus:outline-none`}
+                          aria-label="Favorite Novel"
+                        >
+                          {isFavorited ? (
+                            <HeartIconSolid className="w-6 h-6" />
+                          ) : (
+                            <HeartIconOutline className="w-6 h-6" />
+                          )}
+                        </button>
                       </div>
                     </div>
 
@@ -127,9 +180,7 @@ function DetailNovel({ _id }: Props): JSX.Element {
                               key={index}
                               className="chapter"
                             >
-                              <h3 className="chapter-title">
-                                {chapter?.name}
-                              </h3>{" "}
+                              <h3 className="chapter-title">{chapter?.name}</h3>{" "}
                             </Link>
                           ))
                         ) : (
@@ -178,7 +229,7 @@ function DetailNovel({ _id }: Props): JSX.Element {
             </Grid>
           </Grid>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

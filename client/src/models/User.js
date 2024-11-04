@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
   },
   novel_favorites: [{
     type: mongoose.Schema.Types.ObjectId,
-    // ref: 'Novel'
+    ref: 'Novel'
   }],  
   createdAt: {
     type: Date,
