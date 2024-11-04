@@ -1,6 +1,6 @@
 "use client";
 
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import {
   Tabs,
@@ -33,16 +33,16 @@ export default function App() {
     email: "",
     password: "",
   });
-  const { data: session,status } = useSession();
+  const { data: session, status } = useSession();
 
   const router = useRouter();
 
-  console.log("session ", session)
-  console.log("status ", status)
+  console.log("session ", session);
+  console.log("status ", status);
 
   useEffect(() => {
     if (status === "authenticated") {
-      redirect("/")
+      redirect("/");
     }
   }, [status]);
 
@@ -60,10 +60,10 @@ export default function App() {
       router.push("/");
     }
 
-    if (!res.error) {
-      // handle success (e.g., redirect to a protected page)
-    } else {
-      alert("Signin failed");
+    if (res?.error) {
+      // Display error to the user
+      console.error("Login error:", res.error);
+      alert(res.error); // Or handle error display in a more user-friendly way
     }
   };
 
@@ -87,12 +87,7 @@ export default function App() {
 
   return (
     <>
-      <nav>
-        <div className="relative z-[200] h-[50px] md:h-[60px] ">
-          <NavBar position={"fixed"} />
-        </div>
-      </nav>
-      <main className="mt-12 my-12 md:mt-8 md:my-8">
+      <div className="mt-12 my-12 md:my-28">
         <div className="flex justify-center">
           <Card className="max-w-full w-[340px] h-[400px]">
             <CardBody className="overflow-hidden">
@@ -208,7 +203,7 @@ export default function App() {
             </CardBody>
           </Card>
         </div>
-      </main>
+      </div>
     </>
   );
 }

@@ -23,7 +23,7 @@ import Category from "../category/categoy";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 
-const App = ({ position }) => {
+const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   // console.log(user?.username);
@@ -32,7 +32,7 @@ const App = ({ position }) => {
 
   return (
     <Navbar
-      className={`bg-navbar-color ${position}`}
+      className={`bg-navbar-color sticky`} //${position}
       isBordered
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
@@ -149,4 +149,4 @@ const App = ({ position }) => {
   );
 };
 
-export default App;
+export default NavBar;

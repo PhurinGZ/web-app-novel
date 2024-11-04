@@ -31,7 +31,7 @@ const authOption: AuthOptions = {
           const user = await User.findOne({ email: credentials?.email });
           if (!user) {
             console.error("User not found");
-            throw new Error("User not found");
+            return Promise.reject(new Error("User not found"));
           }
 
           console.log("Password to compare:", credentials?.password);
@@ -45,7 +45,7 @@ const authOption: AuthOptions = {
           console.log("Password match result:", passwordMatch);
 
           if (!passwordMatch) {
-            throw new Error("Incorrect password");
+            return Promise.reject(new Error("Incorrect password"));
           }
 
           return {

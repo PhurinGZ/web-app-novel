@@ -24,7 +24,7 @@ function Profile() {
 
     if (status === "authenticated" && session.user) {
       return (
-        <main className="mt-12 md:mt-8">
+        <main className="mt-12 md:mt-16">
           <div className="py-8 px-4 md:px-8">
             <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg overflow-hidden md:max-w-2xl">
               <div>
@@ -38,7 +38,7 @@ function Profile() {
               <div className="md:flex p-8">
                 <div className="md:flex-shrink-0">
                   <Avatar
-                    src="http://localhost:1337/uploads/hacker_f0302061a0.png"
+                    src="https://raw.githubusercontent.com/PhurinGZ/web-app-novel/refs/heads/new_feature/client/public/image/testProfile.jpg"
                     className="w-40 h-40 md:w-36 md:h-36"
                   />
                 </div>
@@ -63,16 +63,7 @@ function Profile() {
     return <NotFound404 />;
   };
 
-  return (
-    <>
-      <nav>
-        <div className="relative z-50 h-16 md:h-20">
-          <NavBar position="fixed" />
-        </div>
-      </nav>
-      {renderContent()}
-    </>
-  );
+  return <>{renderContent()}</>;
 }
 
 export default Profile;

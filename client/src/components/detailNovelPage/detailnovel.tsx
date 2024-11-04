@@ -79,11 +79,11 @@ function DetailNovel({ _id }: Props): JSX.Element {
 
   return (
     <div>
-      <nav>
+      {/* <nav>
         <div className="relative z-[200] h-[50px] md:h-[60px] ">
           <NavBar position={"fixed"} />
         </div>
-      </nav>
+      </nav> */}
       <main>
         <div className="pb-12">
           <Grid container>
