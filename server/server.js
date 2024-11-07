@@ -23,13 +23,11 @@ dbConnect()
 const categoryRoutes = require('./routes/category');
 const novelRoutes = require('./routes/novel');
 const chapterRoutes = require('./routes/chapter');
-const rateRoutes = require('./routes/rate');
 const listNovelRoutes = require('./routes/ListNovel')
 
 app.use('/api/categories', categoryRoutes);
 app.use('/api/novels', novelRoutes);
 app.use('/api/chapters', chapterRoutes);
-app.use('/api/rates', rateRoutes);
 app.use('/api/list-novels', listNovelRoutes)
 
 app.listen(port, () => {

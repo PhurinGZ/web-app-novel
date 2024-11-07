@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
 // Get a novel by ID
 router.get('/:id', async (req, res) => {
   try {
-    const novel = await Novel.findById(req.params.id).populate('chapters').populate('category').populate('user_favorites');
+    const novel = await Novel.findById(req.params.id).populate('chapters').populate('category').populate('createdBy').populate('user_favorites');
     if (!novel) return res.status(404).json({ message: 'Novel not found' });
     res.json(novel);
   } catch (error) {

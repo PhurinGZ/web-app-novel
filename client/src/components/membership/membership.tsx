@@ -61,6 +61,7 @@ export default function App() {
     });
 
     if (res.ok) {
+      setLoading(false);
       router.push("/");
     }
 
@@ -87,6 +88,7 @@ export default function App() {
       body: JSON.stringify(formDataSignup),
     });
     if (res.ok) {
+      setLoading(false);
       setSelected("login");
     } else {
 

@@ -57,6 +57,8 @@ export async function POST(req: Request) {
       novel.user_favorites.push(userId);
     }
 
+    console.log(isFavorited)
+
     await user.save();
     await novel.save();
 

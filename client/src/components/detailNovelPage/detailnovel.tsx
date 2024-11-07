@@ -1,24 +1,19 @@
+// app/component/detailNovelPage/detailnovel.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Typography, Grid } from "@mui/material";
-import Rating from "@mui/material/Rating";
-import { detailNovel, userReviews } from "../../data/dataDetailNovel"; // Assuming you have a type for userReviews
-
-import NavBar from "@/components/navbar/navbar";
+import { Grid } from "@mui/material";
 
 import Image from "next/image";
 import "@/components/detailNovelPage/style.scss";
-import dataCardNovel from "@/data/data";
 import { Link } from "@nextui-org/react";
-import Footer from "../footer/footer";
 
 import useSWR from "swr";
 import Loading from "@/components/loading/loading";
-import { useChapter } from "@/context/dropdownReadNovelProvider";
 import { HeartIcon as HeartIconOutline } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartIconSolid } from "@heroicons/react/24/solid";
 import { useSession } from "next-auth/react"; // Import useSession to get session data
+import Comment from "./review";
 
 interface Props {
   id: Object;
@@ -38,24 +33,13 @@ interface DataCardNovel {
   tags: object;
   updatedAt: string;
   user: object;
-  user_faverites: object;
+  user_favorites: object;
 }
 
 function DetailNovel({ _id }: Props): JSX.Element {
   const { data: session, status } = useSession(); // Get session data
-  const [ratingValue, setRatingValue] = useState<number | null>(null); // Add type annotation for ratingValue
-  const [ratingUser, setRatingUser] = useState<number | null>(); // Add type annotation for ratingUser
   const [dataNovel, setDataNovel] = useState<DataCardNovel | null>(null);
-  // const { setId } = useChapter();
   const [isFavorited, setIsFavorited] = useState(false);
-
-  const handleRatingChange = (
-    event: React.ChangeEvent<{}>,
-    newValue: number | null
-  ) => {
-    // Add type annotations for event and newValue
-    setRatingValue(newValue);
-  };
 
   // console.log(ratingUser)
 
@@ -73,42 +57,41 @@ function DetailNovel({ _id }: Props): JSX.Element {
   useEffect(() => {
     if (data && _id) {
       setDataNovel(data);
-      // setId(data._id)
     }
   }, [data]);
 
   const toggleFavorite = async () => {
     if (status === "unauthenticated") {
-      alert("Please log in to favorite this novel."); // Alert or redirect to login
-      return; // Exit the function if not logged in
+      alert("Please log in to favorite this novel.");
+      return;
     }
 
     // Optimistically update the favorite state locally
     const updatedFavorites = isFavorited
-      ? dataNovel.user_favorites.filter((userId) => userId !== session.user.id) // Remove user's ID
-      : [...dataNovel.user_favorites, session.user.id]; // Add user's ID
+      ? dataNovel.user_favorites.filter((user) => user._id !== session.user.id)
+      : [...dataNovel.user_favorites, { _id: session.user.id }]; // Add user object with ID
 
     setDataNovel((prev) => ({
       ...prev,
-      user_favorites: updatedFavorites, // Update state with new favorites
+      user_favorites: updatedFavorites,
     }));
 
-    setIsFavorited(!isFavorited); // Toggle the favorited state
+    setIsFavorited(!isFavorited);
 
     try {
+      // Rest of your code remains the same
       if (dataNovel && dataNovel._id) {
         const response = await fetch("/api/favorite", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ novelId: dataNovel._id }), // Send the novel ID to the API
+          body: JSON.stringify({ novelId: dataNovel._id }),
         });
 
         const result = await response.json();
 
         if (response.ok) {
-          // Update the favorite status based on the response
           setIsFavorited(result.isFavorited);
         } else {
           console.error("Failed to update favorite status:", result.message);
@@ -120,9 +103,11 @@ function DetailNovel({ _id }: Props): JSX.Element {
   };
 
   useEffect(() => {
-    if (data && _id) {
+    if (data && session) {
       setDataNovel(data);
-      setIsFavorited(data.user_favorites.includes(session?.user.id)); // Check if the user has favorited the novel
+      setIsFavorited(
+        data.user_favorites.map((user) => user._id).includes(session?.user.id)
+      ); // Check if the user has favorited the novel
     }
   }, [data, session]);
 
@@ -132,6 +117,9 @@ function DetailNovel({ _id }: Props): JSX.Element {
   if (!data) return <Loading />;
 
   console.log(dataNovel);
+
+  console.log("isFavorite", session?.user?.id);
+  // console.log("user favorite", data.user_favorites.includes(session?.user?.id));
 
   return (
     <div>
@@ -158,10 +146,13 @@ function DetailNovel({ _id }: Props): JSX.Element {
                       {/* Text */}
                       <div className="w-full">
                         <h1 className="text-xl font-bold">{dataNovel?.name}</h1>
-                        <p>
-                          by: gg{" "}
-                          {/*{dataNovel?.user.data?.attributes?.username}*/}
-                        </p>{" "}
+                        {dataNovel &&
+                        dataNovel.createdBy &&
+                        dataNovel.createdBy.username ? (
+                          <p>by: {dataNovel?.createdBy.username} </p>
+                        ) : (
+                          <p>error data</p>
+                        )}
                         {/* Display author */}
                         <p className="text-sm">{dataNovel?.detail}</p>
                       </div>
@@ -221,39 +212,12 @@ function DetailNovel({ _id }: Props): JSX.Element {
                         )}
                       </div>
                     </div>
-
-                    <div className="review mt-6 min-h-[300px]">
-                      <div className="total-review h-[300px]">
-                        <div className="h-full flex flex-col justify-center items-center">
-                          <Rating
-                            name="controlled-rating"
-                            value={ratingUser}
-                            onChange={handleRatingChange}
-                            precision={0.5}
-                            readOnly
-                          />
-                          <p className="text-sm">
-                            Current Rating: {ratingUser}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="review-user mt-4">
-                        {/* {dt.rating.map((rat, index) => (
-                          <div className="review-user mt-4" key={index}>
-                            {console.log(index)}
-                            <div className="mb-4">
-                              <Rating
-                                name={`controlled-rating-${index}`}
-                                value={rat} // Assuming dt.rating is an average rating
-                                readOnly
-                                precision={0.5}
-                              />
-                              <p className="text-sm">Average Rating: {rat}</p>
-                            </div>
-                          </div>
-                        ))} */}
-                      </div>
-                    </div>
+                    {/* comment and rating */}
+                    {dataNovel && dataNovel._id ? (
+                      <Comment novelId={dataNovel?._id} />
+                    ) : (
+                      <>Error to fetch data</>
+                    )}
                   </div>
                 </div>
               </div>
