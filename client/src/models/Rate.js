@@ -30,6 +30,6 @@ const rateSchema = new mongoose.Schema({
   }
 });
 
-const Rate = mongoose.model('Rate', rateSchema);
+const Rate = mongoose.models.Rate || mongoose.model('Rate', rateSchema);
 
 module.exports = Rate;

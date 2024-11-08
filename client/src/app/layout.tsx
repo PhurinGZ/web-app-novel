@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-// import UserProvider from "@/context/UserProvider";
 import Footer from "@/components/footer/footer";
 import NavBar from "@/components/navbar/navbar";
 import { AuthProvider } from "@/provider/authProvider";
@@ -21,11 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <AuthProvider>
-        <body className={`${inter.className} min-h-screen`}>
+        <body className={`${inter.className} flex flex-col min-h-screen`}>
           <nav className="sticky top-0 z-50">
             <NavBar />
           </nav>
-          <main>{children}</main>
+          <main className="flex-1">{children}</main>
           <footer>
             <Footer />
           </footer>

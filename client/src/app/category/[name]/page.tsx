@@ -5,6 +5,8 @@ import React from "react";
 
 function page() {
   const params = useParams<{ name: string }>();
+
+  // console.log(params.name)
   return (
     <div>
       <CategoryPage name={params.name} />

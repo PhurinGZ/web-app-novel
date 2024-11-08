@@ -1,17 +1,22 @@
 [
-    {
-      "name": "Fantasy",
-      "nameThai": "แฟนตาซี",
-      "novels": ["671731a0c4ff0bbeb3420fd6","671731a0c4ff0bbeb3420fd7"],
-      "createdBy": "userObjectId1",
-      "updatedBy": "userObjectId1"
-    },
-    {
-      "name": "Science Fiction",
-      "nameThai": "วิทยาศาสตร์",
-      "novels": [],
-      "createdBy": "userObjectId2",
-      "updatedBy": "userObjectId2"
-    }
-  ]
-  
+  {
+    "name": "Romance",
+    "novels": ["645b0cd3aefb7e1b8d5f5d95", "645b0cd3aefb7e1b8d5f5d96"],
+    "nameThai": "โรแมนติก",
+    "createdAt": "2024-11-08T08:35:42.123Z",
+    "updatedAt": "2024-11-08T08:35:42.123Z",
+    "publishedAt": "2024-11-07T10:00:00.000Z",
+    "createdBy": "645b0cd3aefb7e1b8d5f5d93",
+    "updatedBy": "645b0cd3aefb7e1b8d5f5d94"
+  },
+  {
+    "name": "Horror",
+    "novels": ["645b0cd3aefb7e1b8d5f5d97"],
+    "nameThai": "สยองขวัญ",
+    "createdAt": "2024-11-08T08:40:42.123Z",
+    "updatedAt": "2024-11-08T08:40:42.123Z",
+    "publishedAt": "2024-11-07T10:00:00.000Z",
+    "createdBy": "645b0cd3aefb7e1b8d5f5d93",
+    "updatedBy": "645b0cd3aefb7e1b8d5f5d94"
+  }
+]

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navber from "@/components/navbar/navbar";
 import Footer from "../footer/footer";
 import useSWR from "swr";
@@ -8,63 +8,54 @@ import NotFound404 from "../notFound/404NotFound";
 import { Link } from "@nextui-org/react";
 
 function CategoryPage({ name }) {
+  const [data, setData] = useState();
+
   const fetcher = (url) => fetch(url).then((res) => res.json());
 
-  const { data: novelData, error: novelError } = useSWR(
-    "http://localhost:1337/api/novels?populate=*",
-    fetcher
-  );
-
   const { data: category, error: categoryError } = useSWR(
-    `http://localhost:1337/api/categories?filters[name][$eq]=${name}&populate=*`,
+    `/api/categories/${name}`,
     fetcher
   );
 
-  //   console.log(novelData);
+  useEffect(() => {
+    if (category) {
+      setData(category.data);
+    }
+  }, [category]);
 
-  if (category?.data.length === 0) return <NotFound404 />;
+  if (category?.success === "false") return <NotFound404 />;
 
-  if (!novelData) return <Loading />;
-  if (novelError) return <div>{novelError.message}</div>;
-
-  // console.log(category?.data.length === 0)
-  //   console.log(category.data[0].attributes.nameThai);
+  if (!category) return <Loading />;
 
   return (
     <>
-      <nav className="relative z-[200] h-[50px] md:h-[60px]">
-        <Navber position={"fixed"} />
-      </nav>
-      <main>
+      <div>
         <div className="container px-10 pb-32 sm:px-10 md:px-10 lg:px-0 mt-4">
-          <h1 className="text-2xl font-bold md:ml-6">
-            หมวดหมู่: {category?.data[0].attributes.nameThai}
-          </h1>
-          {novelData?.data.map((n) => {
-            if (n.attributes.category.data.attributes.name === name) {
-              return (
-                <Link key={n.id} className="mt-4 md:m-8 flex" href={`/book/${n.attributes.name}`}>
-                  <Image
-                    src="/image/imageBook1.png"
-                    width={100}
-                    height={100}
-                    alt="Book cover"
-                  />
-                  <div className="ml-4">
-                    <h1 className="font-bold text-lg">{n.attributes.name}</h1>
-                    <p className="text-gray-600">
-                      {n.attributes.category.data.attributes.name} ·{" "}
-                      {n.attributes.rate.data.attributes.name}
-                    </p>
-                    {/* <p className="text-gray-800">{n.desc}</p> */}
-                  </div>
-                </Link>
-              );
-            }
-            return null;
-          })}
+          <h1 className="text-2xl font-bold md:ml-6">หมวดหมู่: {data?.name}</h1>
+          {data?.novels?.map((n) => (
+            <Link
+              key={n._id}
+              className="mt-4 md:m-8 flex"
+              href={`/book/${n._id}`}
+            >
+              <Image
+                src="/image/imageBook1.png"
+                width={100}
+                height={100}
+                alt="Book cover"
+                className="w-36 h-36 object-cover rounded-lg"
+              />
+              <div className="ml-4">
+                <h1 className="font-bold text-lg">{n.name}</h1>
+                <p className="text-gray-600">
+                {data?.name} · {n.rate.name}
+                </p>
+                {/* <p className="text-gray-800">{n.desc}</p> */}
+              </div>
+            </Link>
+          ))}
         </div>
-      </main>
+      </div>
     </>
   );
 }
