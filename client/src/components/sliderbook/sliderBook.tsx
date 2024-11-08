@@ -28,8 +28,12 @@ interface Props {
     id: number;
     name: string;
     desc: string;
-    category: string;
-    rate: string;
+    category: {
+      name: String;
+    };
+    rate: {
+      name: String;
+    };
     rating: number[];
     detail: string;
     tag: string;
@@ -38,7 +42,9 @@ interface Props {
       name: string;
       content: string;
     }[];
-    createdBy: string;
+    createdBy: {
+      username: String;
+    };
     public: boolean;
     updateAt: string;
     createAt: string;
@@ -56,14 +62,12 @@ function SliderBook({ dataCardNovel }: Props) {
     id: novel._id,
 
     title: novel.name, // Change to novel.title
-    category: novel?.name,
-    rate: novel?.name, // Convert rate to number
-    author: novel?.createdBy,
-
+    category: novel?.category?.name,
+    rate: novel?.rate?.name, // Convert rate to number
+    author: novel?.createdBy?.username,
   }));
 
-  console.log(dataCardNovel)
-  
+  console.log(dataCardNovel);
 
   const [selected, setSelected] = React.useState<number[]>([]); // Change to number[]
 
@@ -100,10 +104,9 @@ function SliderBook({ dataCardNovel }: Props) {
 }
 
 function LeftArrow() {
-
   const visibility = React.useContext(VisibilityContext);
   const isFirstItemVisible = visibility.useIsVisible("first", true);
-  const scrollPrev = visibility.scrollPrev
+  const scrollPrev = visibility.scrollPrev;
 
   return (
     <Arrow disabled={isFirstItemVisible} onClick={() => scrollPrev()}>
@@ -115,7 +118,7 @@ function LeftArrow() {
 function RightArrow() {
   const visibility = React.useContext(VisibilityContext);
   const isLastItemVisible = visibility.useIsVisible("last", false);
-  const scrollNext = visibility.scrollNext
+  const scrollNext = visibility.scrollNext;
   // console.log(isLastItemVisible)
 
   return (
@@ -158,9 +161,7 @@ function Card({
       }}
       tabIndex={0}
     >
-
-      <Link href={`/book/${itemId }`} style={{ textDecoration: "none" }}>
-
+      <Link href={`/book/${itemId}`} style={{ textDecoration: "none" }}>
         <div className={`card ${selected ? "selected" : ""} `}>
           <Image
             src={"/image/imageBook1.png"}

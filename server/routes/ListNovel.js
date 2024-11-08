@@ -5,10 +5,26 @@ const router = express.Router();
 // Get all list novels
 router.get("/", async (req, res) => {
   try {
-    const listNovels = await ListNovel.find()
-      .populate("novels")
-    //   .populate("createdBy")
-    //   .populate("updatedBy");
+    const listNovels = await ListNovel.find().populate({
+      path: "novels",
+      populate: [
+        {
+          path: "createdBy", // Populate the 'createdBy' field inside each novel
+          select: "username",
+        },
+        {
+          path: "rate", // Populate the 'rate' field inside each novel
+          select: "name",
+        },
+        {
+          path: "category", // Populate the 'category' field inside each novel
+          select: "name",
+        },
+      ],
+    });
+    // .populate("createdBy") // Uncomment if you want to populate 'createdBy' in ListNovel
+    // .populate("updatedBy"); // Uncomment if you want to populate 'updatedBy' in ListNovel
+
     res.json(listNovels);
   } catch (error) {
     res.status(500).json({ message: error.message });

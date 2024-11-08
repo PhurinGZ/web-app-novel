@@ -24,11 +24,13 @@ const categoryRoutes = require('./routes/category');
 const novelRoutes = require('./routes/novel');
 const chapterRoutes = require('./routes/chapter');
 const listNovelRoutes = require('./routes/ListNovel')
+const rateNovel = require('./routes/rate')
 
 app.use('/api/categories', categoryRoutes);
 app.use('/api/novels', novelRoutes);
 app.use('/api/chapters', chapterRoutes);
 app.use('/api/list-novels', listNovelRoutes)
+app.use('/api/rate', rateNovel)
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
