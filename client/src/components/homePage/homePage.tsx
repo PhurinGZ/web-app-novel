@@ -10,30 +10,30 @@ import useSWR from "swr";
 import Loading from "@/components/loading/loading";
 
 function HomePage() {
-  const [dataNovel, setDataNovel] = useState(null);
+  // const [dataNovel, setDataNovel] = useState(null);
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
 
-  const { data: novelData, error: novelError } = useSWR(
-    "http://localhost:3001/api/novels",
-    fetcher
-  );
+  // const { data: novelData, error: novelError } = useSWR(
+  //   "http://localhost:3001/api/novels",
+  //   fetcher
+  // );
 
   const { data: listNovelsData, error: listNovelsError } = useSWR(
     "http://localhost:3001/api/list-novels",
     fetcher
   );
-  console.log(novelData)
+  // console.log(novelData)
 
-  useEffect(() => {
-    if (novelData) {
-      setDataNovel(novelData);
-      // console.log(data);
-    }
-  }, [novelData]);
+  // useEffect(() => {
+  //   if (novelData) {
+  //     setDataNovel(novelData);
+  //     // console.log(data);
+  //   }
+  // }, [novelData]);
 
-  if (novelError) return <div>Failed to load, Error : {novelError.message}</div>;
-  if (!dataNovel) return <Loading />;
+  if (listNovelsError) return <div>Failed to load, Error : {listNovelsError.message}</div>;
+  if (!listNovelsData) return <Loading />;
 
   console.log(listNovelsData)
 

@@ -38,7 +38,7 @@ interface Props {
       name: string;
       content: string;
     }[];
-    author: string;
+    createdBy: string;
     public: boolean;
     updateAt: string;
     createAt: string;
@@ -58,9 +58,11 @@ function SliderBook({ dataCardNovel }: Props) {
     title: novel.name, // Change to novel.title
     category: novel?.name,
     rate: novel?.name, // Convert rate to number
-    // author: novel?.username,
+    author: novel?.createdBy,
 
   }));
+
+  console.log(dataCardNovel)
   
 
   const [selected, setSelected] = React.useState<number[]>([]); // Change to number[]

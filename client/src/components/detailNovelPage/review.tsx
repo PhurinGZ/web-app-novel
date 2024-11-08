@@ -35,18 +35,24 @@ export default function ReviewSection({ novelId }) {
     fetchReviews();
   }, [novelId]);
 
-  console.log(reviews)
+  console.log(reviews);
+
+  // Add polling for reviews and average rating
+  useEffect(() => {
+    fetchReviews();
+    // Poll for updates every 30 seconds
+    const pollInterval = setInterval(fetchReviews, 30000);
+
+    return () => clearInterval(pollInterval);
+  }, [novelId]);
 
   useEffect(() => {
     if (session?.user && reviews.length > 0) {
       const userReview = reviews.find(
         (review) => review.user?._id === session.user.id
       );
-
-      // console.log(userReview)
       setUserHasReviewed(!!userReview);
 
-      // If user has a review and we're editing, populate the form
       if (userReview && isEditing) {
         setRatingUser(userReview.rating);
         setReview(userReview.content);
@@ -55,7 +61,7 @@ export default function ReviewSection({ novelId }) {
     }
   }, [session, reviews, isEditing]);
 
-
+  // Updated fetchReviews function with better error handling
   async function fetchReviews() {
     try {
       const response = await fetch(`/api/novels/reviews?novelId=${novelId}`);
@@ -64,15 +70,16 @@ export default function ReviewSection({ novelId }) {
       }
       const data = await response.json();
 
-      console.log(data);
-      setReviews(data.reviews);
-      setAverageRating(data.averageRating);
+      if (data.reviews) {
+        setReviews(data.reviews);
+        // Ensure we're getting a number for averageRating
+        setAverageRating(Number(data.averageRating) || 0);
+      }
     } catch (error) {
       console.error("Error fetching reviews:", error);
       setError("Failed to load reviews. Please try again later.");
     }
   }
-
   const handleRatingChange = (newValue) => {
     setRatingUser((prevRating) => (newValue === prevRating ? 0 : newValue));
     setError("");
@@ -89,8 +96,8 @@ export default function ReviewSection({ novelId }) {
       setRatingUser(userReview.rating);
       setReview(userReview.content);
       setEditingReviewId(userReview._id);
-    }else{
-      console.log("error")
+    } else {
+      console.log("error");
     }
   };
 
@@ -121,7 +128,7 @@ export default function ReviewSection({ novelId }) {
       ? `/api/novels/reviews?reviewId=${editingReviewId}`
       : `/api/novels/reviews`;
 
-      console.log(url)
+    console.log(url);
     try {
       const response = await fetch(url, {
         method,
@@ -142,6 +149,9 @@ export default function ReviewSection({ novelId }) {
         throw new Error(data.message || "Failed to submit review");
       }
 
+      // Immediately fetch fresh data after submission
+      await fetchReviews();
+
       // console.log("data",data)
 
       if (isEditing) {
@@ -154,7 +164,7 @@ export default function ReviewSection({ novelId }) {
         setReviews((prevReviews) => [data.review, ...prevReviews]);
       }
 
-      setAverageRating(data.averageRating);
+      // setAverageRating(data.averageRating);
       setUserHasReviewed(true);
       setIsEditing(false);
       setEditingReviewId(null);
@@ -282,7 +292,7 @@ export default function ReviewSection({ novelId }) {
             <div className="space-y-6 max-h-60 overflow-y-auto">
               {reviews.map((review, index) => (
                 <div
-                  key={index}
+                  key={review._id || index}
                   className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"
                 >
                   <div className="flex items-center gap-4 mb-3">
