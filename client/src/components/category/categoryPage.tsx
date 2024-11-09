@@ -34,31 +34,39 @@ function CategoryPage({ name }) {
           <h1 className="text-3xl font-bold text-center mb-6 text-indigo-600">
             หมวดหมู่: {data?.name}
           </h1>
-          <div className="space-y-6">
-            {data?.novels?.map((novel) => (
-              <Link
-                key={novel._id}
-                href={`/book/${novel._id}`}
-                className="flex items-center p-4 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow duration-200"
-              >
-                <Image
-                  src="/image/imageBook1.png"
-                  width={100}
-                  height={100}
-                  alt="Book cover"
-                  className="w-24 h-24 object-cover rounded-lg"
-                />
-                <div className="ml-4">
-                  <h2 className="text-xl font-semibold text-gray-800">
-                    {novel.name}
-                  </h2>
-                  <p className="text-gray-600">
-                    {data?.name} · {novel.rate.name}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
+
+          {data && data.novels && data.novels.length > 0 ? (
+            <div className="space-y-6">
+              {data.novels.map((novel) => (
+                <Link
+                  key={novel._id}
+                  href={`/book/${novel._id}`}
+                  className="flex items-center p-4 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow duration-200"
+                >
+                  {/* Assuming each novel has an image URL */}
+                  <Image
+                    src={novel.image || "/image/imageBook1.png"}
+                    width={100}
+                    height={100}
+                    alt="Book cover"
+                    className="w-24 h-24 object-cover rounded-lg"
+                  />
+                  <div className="ml-4">
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      {novel.name}
+                    </h2>
+                    <p className="text-gray-600">
+                      {data?.name} · {novel?.rate?.name || "No Rating"}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-500">
+              ไม่มีนิยายในหมวดหมู่นี้
+            </div>
+          )}
         </div>
 
         {/* Filter Sidebar (for future use) */}
