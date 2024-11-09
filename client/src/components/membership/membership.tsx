@@ -69,6 +69,7 @@ export default function App() {
       // Display error to the user
       console.error("Login error:", res.error);
       alert(res.error); // Or handle error display in a more user-friendly way
+      setLoading(false);
     }
   };
 

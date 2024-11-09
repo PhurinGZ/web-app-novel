@@ -16,7 +16,6 @@ export default function ReviewSection({ novelId }) {
   const [error, setError] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editingReviewId, setEditingReviewId] = useState(null);
-  const [lastUpdateTime, setLastUpdateTime] = useState(Date.now());
 
   const router = useRouter();
 
@@ -36,12 +35,9 @@ export default function ReviewSection({ novelId }) {
     });
   };
 
-  // Enhanced fetchReviews with optimistic updates
-  async function fetchReviews(skipCache = false) {
+  async function fetchReviews() {
     try {
-      const response = await fetch(
-        `/api/novels/reviews?novelId=${novelId}&t=${skipCache ? Date.now() : lastUpdateTime}`
-      );
+      const response = await fetch(`/api/novels/reviews?novelId=${novelId}&t=${Date.now()}`);
       
       if (!response.ok) {
         throw new Error("Failed to fetch reviews");
@@ -50,10 +46,20 @@ export default function ReviewSection({ novelId }) {
       const data = await response.json();
 
       if (data.reviews) {
-        setReviews(data.reviews);
+        // Preserve the review being edited
+        if (isEditing && editingReviewId) {
+          const updatedReviews = data.reviews.map(review => 
+            review._id === editingReviewId ? 
+              reviews.find(r => r._id === editingReviewId) : 
+              review
+          );
+          setReviews(updatedReviews);
+        } else {
+          setReviews(data.reviews);
+        }
+        
         const newAverage = calculateAverageRating(data.reviews);
         setAverageRating(newAverage);
-        setLastUpdateTime(Date.now());
       }
     } catch (error) {
       console.error("Error fetching reviews:", error);
@@ -63,38 +69,21 @@ export default function ReviewSection({ novelId }) {
 
   // Initial load
   useEffect(() => {
-    fetchReviews(true);
+    fetchReviews();
   }, [novelId]);
 
-  // Real-time polling with progressive intervals
+  // Real-time updates for Reader Reviews section only
   useEffect(() => {
-    let pollInterval = 5000; // Start with 5 seconds
-    const maxInterval = 30000; // Max 30 seconds
-    const incrementFactor = 1.5; // Increase interval by 50% each time
-
-    const poll = async () => {
-      await fetchReviews();
+    // const intervalId = setInterval(() => {
       
-      // Increase polling interval progressively
-      pollInterval = Math.min(pollInterval * incrementFactor, maxInterval);
-    };
+    // }, 5000); // Poll every 5 seconds
 
-    const timer = setInterval(poll, pollInterval);
+    // return () => clearInterval(intervalId);
 
-    // Reset polling on user interaction
-    const resetPolling = () => {
-      pollInterval = 5000;
-    };
-
-    window.addEventListener('mousemove', resetPolling);
-    window.addEventListener('keypress', resetPolling);
-
-    return () => {
-      clearInterval(timer);
-      window.removeEventListener('mousemove', resetPolling);
-      window.removeEventListener('keypress', resetPolling);
-    };
-  }, [novelId]);
+    if (!isEditing) {  // Don't fetch while editing to avoid conflicts
+      fetchReviews();
+    }
+  }, [novelId, isEditing]);
 
   useEffect(() => {
     if (session?.user && reviews.length > 0) {
@@ -152,7 +141,6 @@ export default function ReviewSection({ novelId }) {
     setIsLoading(true);
     setError("");
 
-    // Optimistic update
     const tempReview = {
       _id: editingReviewId || `temp-${Date.now()}`,
       user: session?.user,
@@ -194,8 +182,7 @@ export default function ReviewSection({ novelId }) {
         throw new Error(data.message || "Failed to submit review");
       }
 
-      // Fetch fresh data after submission
-      await fetchReviews(true);
+      await fetchReviews();
 
       setUserHasReviewed(true);
       setIsEditing(false);
@@ -205,8 +192,7 @@ export default function ReviewSection({ novelId }) {
     } catch (error) {
       console.error("Error submitting review:", error);
       setError(error.message || "Failed to submit review. Please try again.");
-      // Revert optimistic update on error
-      await fetchReviews(true);
+      await fetchReviews();
     } finally {
       setIsLoading(false);
     }
@@ -214,6 +200,10 @@ export default function ReviewSection({ novelId }) {
 
   const handleToSignin = () => {
     router.push("/membership");
+  };
+
+  const handleReviewChange = (e) => {
+    setReview(e.target.value);
   };
 
   const renderReviewForm = () => (
@@ -239,10 +229,9 @@ export default function ReviewSection({ novelId }) {
           label="Your Review"
           placeholder="Share your thoughts about this novel..."
           value={review}
-          onChange={(e) => setReview(e.target.value)}
+          onChange={handleReviewChange}
           minRows={3}
           className="w-full"
-          required
         />
 
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
@@ -279,7 +268,6 @@ export default function ReviewSection({ novelId }) {
 
   return (
     <div className="review mt-6 min-h-[300px]">
-      {/* Average Rating Display with animation */}
       <div className="total-review h-[300px] bg-gray-50 rounded-lg transition-all duration-300">
         <div className="h-full flex flex-col justify-center items-center">
           <div className="text-center mb-4">
