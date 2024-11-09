@@ -111,6 +111,7 @@ export default function ReviewSection({ novelId }) {
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
+
     if (!review.trim()) {
       setError("Please write a review before submitting.");
       return;
@@ -128,7 +129,6 @@ export default function ReviewSection({ novelId }) {
       ? `/api/novels/reviews?reviewId=${editingReviewId}`
       : `/api/novels/reviews`;
 
-    console.log(url);
     try {
       const response = await fetch(url, {
         method,
@@ -149,22 +149,12 @@ export default function ReviewSection({ novelId }) {
         throw new Error(data.message || "Failed to submit review");
       }
 
-      // Immediately fetch fresh data after submission
-      await fetchReviews();
+      const updatedReviews = isEditing
+        ? reviews.map((c) => (c._id === editingReviewId ? data.review : c))
+        : [data.review, ...reviews.filter((r) => r._id !== data.review._id)];
 
-      // console.log("data",data)
+      setReviews(updatedReviews); // Set only the updated review list
 
-      if (isEditing) {
-        // Update the existing review in the list
-        setReviews(
-          reviews.map((c) => (c._id === editingReviewId ? data.review : c))
-        );
-      } else {
-        // Add new review to the list
-        setReviews((prevReviews) => [data.review, ...prevReviews]);
-      }
-
-      // setAverageRating(data.averageRating);
       setUserHasReviewed(true);
       setIsEditing(false);
       setEditingReviewId(null);

@@ -71,6 +71,7 @@ const Dropdown = ({ novelId, id }: DropdownProps) => {
             placeholder="Select chapter"
             className="w-full md:w-96"
             selectedKeys={[selectedChapterId]}
+            disabledKeys={[selectedChapterId]}
             onChange={e => handleSelectChange(e.target.value)}
             size="sm"
           >

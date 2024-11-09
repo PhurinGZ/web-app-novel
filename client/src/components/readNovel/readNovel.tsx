@@ -79,7 +79,10 @@ function ReadNovel({ _id }) {
       ...comment.user,
       isAuthor: comment.user?._id === dataNovel?.novel?.createdBy
     }
+    
   }));
+
+  console.log(dataNovel)
 
   if (error) return <div>Error loading content</div>;
 
