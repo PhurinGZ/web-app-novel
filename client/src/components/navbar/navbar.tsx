@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import React, { useEffect } from "react";
-
+import React from "react";
+import { Search } from "lucide-react";
 import {
   Navbar,
   NavbarBrand,
@@ -17,6 +17,7 @@ import {
   NavbarMenu,
   NavbarMenuItem,
 } from "@nextui-org/react";
+import { useRouter } from "next/navigation"; // Add this import
 import AcmeLogo from "./AcmeLogo";
 import Image from "next/image";
 import Category from "../category/categoy";
@@ -24,31 +25,20 @@ import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 
 const NavBar = () => {
+  const router = useRouter(); // Add this
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-
-  // console.log(user?.username);
   const [isCategoryOpen, setIsCategoryOpen] = React.useState(false);
   const { data: Session } = useSession();
 
   return (
     <>
       <Navbar
-        className={`bg-navbar-color sticky`} //${position}
+        className="bg-navbar-color sticky"
         isBordered
         isMenuOpen={isMenuOpen}
         onMenuOpenChange={setIsMenuOpen}
       >
-        {/* {isOpen && <Category />}
-        <Image
-          src={"/image/list.png"}
-          width={100}
-          height={100}
-          alt="list"
-          className="max-w-5 in-h-5 sm:hidden cursor-pointer"
-          onClick={() => setIsOpen(!isOpen)}
-        /> */}
-
-        <NavbarBrand className="flex space-x-10 ">
+        <NavbarBrand className="flex space-x-10">
           <div className="flex items-center">
             <Link href="/" color="foreground">
               <AcmeLogo />
@@ -64,7 +54,7 @@ const NavBar = () => {
                   onClick={() => setIsCategoryOpen(!isCategoryOpen)}
                 >
                   <Image
-                    src={"/image/list.png"}
+                    src="/image/list.png"
                     width={100}
                     height={100}
                     alt="list"
@@ -73,22 +63,20 @@ const NavBar = () => {
                   <p className="ml-2">หมวดหมู่</p>
                 </button>
               </NavbarItem>
-              {/* <NavbarItem isActive>
-          <Link
-            href="#"
-            aria-current="page"
-            color="secondary"
-            className="text-white"
-          >
-            About us
-          </Link>
-        </NavbarItem> */}
             </NavbarContent>
           </div>
         </NavbarBrand>
 
-        {Session ? (
-          <NavbarContent as="div" justify="end">
+        <NavbarContent as="div" justify="end" className="flex items-center gap-4">
+          {/* Updated Search Icon with navigation */}
+          <button 
+            className="p-2 hover:bg-white/10 rounded-full transition-colors"
+            onClick={() => router.push('/search')}
+          >
+            <Search className="w-5 h-5 text-white" />
+          </button>
+
+          {Session ? (
             <Dropdown placement="bottom-end">
               <DropdownTrigger>
                 <Avatar
@@ -102,11 +90,7 @@ const NavBar = () => {
                 />
               </DropdownTrigger>
               <DropdownMenu aria-label="Profile Actions" variant="flat">
-                <DropdownItem
-                  key="profile"
-                  className="h-14 gap-2"
-                  href={`/profile`}
-                >
+                <DropdownItem key="profile" className="h-14 gap-2" href="/profile">
                   <p className="font-semibold">Signed in as</p>
                   <p className="font-semibold">{Session?.user?.email}</p>
                 </DropdownItem>
@@ -117,26 +101,20 @@ const NavBar = () => {
                 <DropdownItem key="team_settings">Team Settings</DropdownItem>
                 <DropdownItem key="analytics">Analytics</DropdownItem>
                 <DropdownItem key="configurations">Configurations</DropdownItem>
-                <DropdownItem key="help_and_feedback">
-                  Help & Feedback
-                </DropdownItem>
-                <DropdownItem
-                  key="logout"
-                  color="danger"
-                  onClick={() => signOut()}
-                >
+                <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
+                <DropdownItem key="logout" color="danger" onClick={() => signOut()}>
                   Log Out
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-          </NavbarContent>
-        ) : (
-          <div>
-            <Link href="/membership">Login/registe</Link>
-          </div>
-        )}
+          ) : (
+            <div>
+              <Link href="/membership">Login/registe</Link>
+            </div>
+          )}
+        </NavbarContent>
       </Navbar>
-      {/* Category Overlay */}
+
       {isCategoryOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"

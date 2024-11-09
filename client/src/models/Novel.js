@@ -38,6 +38,19 @@ const novelSchema = new mongoose.Schema(
         ref: "Review",
       },
     ],
+    type: {
+      type: String,
+      enum: ['novel', 'webtoon'],
+      required: [true, 'กรุณาระบุประเภทนิยาย']
+    },
+    tags: [{
+      type: String
+    }],
+    status: {
+      type: String,
+      enum: ['ongoing', 'completed', 'dropped'],
+      default: 'ongoing'
+    },
     createdAt: {
       type: Date,
       default: Date.now,

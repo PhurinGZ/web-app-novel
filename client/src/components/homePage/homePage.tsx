@@ -46,9 +46,9 @@ function HomePage() {
 
             <SliderImage />
           </div>
-          <div className="searchbar-container-home-page">
+          {/* <div className="searchbar-container-home-page">
             <Searchbar />
-          </div>
+          </div> */}
           <div className="content-home">
 
             {listNovelsData?.map((l, index) => (
