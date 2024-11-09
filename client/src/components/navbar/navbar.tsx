@@ -16,8 +16,9 @@ import {
   NavbarMenuToggle,
   NavbarMenu,
   NavbarMenuItem,
+  Spinner,
 } from "@nextui-org/react";
-import { useRouter } from "next/navigation"; // Add this import
+import { useRouter } from "next/navigation";
 import AcmeLogo from "./AcmeLogo";
 import Image from "next/image";
 import Category from "../category/categoy";
@@ -25,10 +26,10 @@ import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 
 const NavBar = () => {
-  const router = useRouter(); // Add this
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = React.useState(false);
-  const { data: Session } = useSession();
+  const { data: session, status } = useSession();
 
   return (
     <>
@@ -68,7 +69,6 @@ const NavBar = () => {
         </NavbarBrand>
 
         <NavbarContent as="div" justify="end" className="flex items-center gap-4">
-          {/* Updated Search Icon with navigation */}
           <button 
             className="p-2 hover:bg-white/10 rounded-full transition-colors"
             onClick={() => router.push('/search')}
@@ -76,7 +76,9 @@ const NavBar = () => {
             <Search className="w-5 h-5 text-white" />
           </button>
 
-          {Session ? (
+          {status === "loading" ? (
+            <Spinner size="sm" color="white" />
+          ) : status === "authenticated" ? (
             <Dropdown placement="bottom-end">
               <DropdownTrigger>
                 <Avatar
@@ -92,7 +94,7 @@ const NavBar = () => {
               <DropdownMenu aria-label="Profile Actions" variant="flat">
                 <DropdownItem key="profile" className="h-14 gap-2" href="/profile">
                   <p className="font-semibold">Signed in as</p>
-                  <p className="font-semibold">{Session?.user?.email}</p>
+                  <p className="font-semibold">{session?.user?.email}</p>
                 </DropdownItem>
                 <DropdownItem key="system" href="/whriter">
                   นักเขียน

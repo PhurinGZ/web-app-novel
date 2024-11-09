@@ -1,5 +1,3 @@
-//src/component/detailnovelPage/review.tsx
-
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Rating from "@mui/material/Rating";
@@ -18,8 +16,15 @@ export default function ReviewSection({ novelId }) {
   const [error, setError] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editingReviewId, setEditingReviewId] = useState(null);
+  const [lastUpdateTime, setLastUpdateTime] = useState(Date.now());
 
   const router = useRouter();
+
+  const calculateAverageRating = (reviewsList) => {
+    if (!reviewsList.length) return 0;
+    const sum = reviewsList.reduce((acc, review) => acc + review.rating, 0);
+    return sum / reviewsList.length;
+  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -31,19 +36,64 @@ export default function ReviewSection({ novelId }) {
     });
   };
 
+  // Enhanced fetchReviews with optimistic updates
+  async function fetchReviews(skipCache = false) {
+    try {
+      const response = await fetch(
+        `/api/novels/reviews?novelId=${novelId}&t=${skipCache ? Date.now() : lastUpdateTime}`
+      );
+      
+      if (!response.ok) {
+        throw new Error("Failed to fetch reviews");
+      }
+      
+      const data = await response.json();
+
+      if (data.reviews) {
+        setReviews(data.reviews);
+        const newAverage = calculateAverageRating(data.reviews);
+        setAverageRating(newAverage);
+        setLastUpdateTime(Date.now());
+      }
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      setError("Failed to load reviews. Please try again later.");
+    }
+  }
+
+  // Initial load
   useEffect(() => {
-    fetchReviews();
+    fetchReviews(true);
   }, [novelId]);
 
-  console.log(reviews);
-
-  // Add polling for reviews and average rating
+  // Real-time polling with progressive intervals
   useEffect(() => {
-    fetchReviews();
-    // Poll for updates every 30 seconds
-    const pollInterval = setInterval(fetchReviews, 30000);
+    let pollInterval = 5000; // Start with 5 seconds
+    const maxInterval = 30000; // Max 30 seconds
+    const incrementFactor = 1.5; // Increase interval by 50% each time
 
-    return () => clearInterval(pollInterval);
+    const poll = async () => {
+      await fetchReviews();
+      
+      // Increase polling interval progressively
+      pollInterval = Math.min(pollInterval * incrementFactor, maxInterval);
+    };
+
+    const timer = setInterval(poll, pollInterval);
+
+    // Reset polling on user interaction
+    const resetPolling = () => {
+      pollInterval = 5000;
+    };
+
+    window.addEventListener('mousemove', resetPolling);
+    window.addEventListener('keypress', resetPolling);
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('mousemove', resetPolling);
+      window.removeEventListener('keypress', resetPolling);
+    };
   }, [novelId]);
 
   useEffect(() => {
@@ -61,25 +111,6 @@ export default function ReviewSection({ novelId }) {
     }
   }, [session, reviews, isEditing]);
 
-  // Updated fetchReviews function with better error handling
-  async function fetchReviews() {
-    try {
-      const response = await fetch(`/api/novels/reviews?novelId=${novelId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch reviews");
-      }
-      const data = await response.json();
-
-      if (data.reviews) {
-        setReviews(data.reviews);
-        // Ensure we're getting a number for averageRating
-        setAverageRating(Number(data.averageRating) || 0);
-      }
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-      setError("Failed to load reviews. Please try again later.");
-    }
-  }
   const handleRatingChange = (newValue) => {
     setRatingUser((prevRating) => (newValue === prevRating ? 0 : newValue));
     setError("");
@@ -89,15 +120,12 @@ export default function ReviewSection({ novelId }) {
     const userReview = reviews.find(
       (review) => review.user?._id === session.user.id
     );
-
-    // console.log("userReview",userReview._id)
+    
     if (userReview) {
       setIsEditing(true);
       setRatingUser(userReview.rating);
       setReview(userReview.content);
       setEditingReviewId(userReview._id);
-    } else {
-      console.log("error");
     }
   };
 
@@ -124,12 +152,29 @@ export default function ReviewSection({ novelId }) {
     setIsLoading(true);
     setError("");
 
-    const method = isEditing ? "PUT" : "POST";
-    const url = isEditing
-      ? `/api/novels/reviews?reviewId=${editingReviewId}`
-      : `/api/novels/reviews`;
+    // Optimistic update
+    const tempReview = {
+      _id: editingReviewId || `temp-${Date.now()}`,
+      user: session?.user,
+      rating: ratingUser,
+      content: review.trim(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const optimisticReviews = isEditing
+      ? reviews.map((r) => (r._id === editingReviewId ? tempReview : r))
+      : [tempReview, ...reviews];
+
+    setReviews(optimisticReviews);
+    setAverageRating(calculateAverageRating(optimisticReviews));
 
     try {
+      const method = isEditing ? "PUT" : "POST";
+      const url = isEditing
+        ? `/api/novels/reviews?reviewId=${editingReviewId}`
+        : `/api/novels/reviews`;
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -149,11 +194,8 @@ export default function ReviewSection({ novelId }) {
         throw new Error(data.message || "Failed to submit review");
       }
 
-      const updatedReviews = isEditing
-        ? reviews.map((c) => (c._id === editingReviewId ? data.review : c))
-        : [data.review, ...reviews.filter((r) => r._id !== data.review._id)];
-
-      setReviews(updatedReviews); // Set only the updated review list
+      // Fetch fresh data after submission
+      await fetchReviews(true);
 
       setUserHasReviewed(true);
       setIsEditing(false);
@@ -163,6 +205,8 @@ export default function ReviewSection({ novelId }) {
     } catch (error) {
       console.error("Error submitting review:", error);
       setError(error.message || "Failed to submit review. Please try again.");
+      // Revert optimistic update on error
+      await fetchReviews(true);
     } finally {
       setIsLoading(false);
     }
@@ -171,16 +215,6 @@ export default function ReviewSection({ novelId }) {
   const handleToSignin = () => {
     router.push("/membership");
   };
-
-  // const formatDate = (dateString) => {
-  //   return new Date(dateString).toLocaleDateString("en-US", {
-  //     year: "numeric",
-  //     month: "long",
-  //     day: "numeric",
-  //   });
-  // };
-
-  // console.log(reviews)
 
   const renderReviewForm = () => (
     <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -245,8 +279,8 @@ export default function ReviewSection({ novelId }) {
 
   return (
     <div className="review mt-6 min-h-[300px]">
-      {/* Average Rating Display */}
-      <div className="total-review h-[300px] bg-gray-50 rounded-lg">
+      {/* Average Rating Display with animation */}
+      <div className="total-review h-[300px] bg-gray-50 rounded-lg transition-all duration-300">
         <div className="h-full flex flex-col justify-center items-center">
           <div className="text-center mb-4">
             <h2 className="text-2xl font-bold text-gray-900">Average Rating</h2>
@@ -257,7 +291,7 @@ export default function ReviewSection({ novelId }) {
                 precision={0.1}
                 size="large"
               />
-              <span className="ml-2 text-xl font-semibold">
+              <span className="ml-2 text-xl font-semibold transition-all duration-300">
                 {averageRating.toFixed(1)}
               </span>
             </div>
@@ -269,7 +303,6 @@ export default function ReviewSection({ novelId }) {
       </div>
 
       <div className="w-full">
-        {/* Reviews List */}
         <div className="reviews-list mt-8 px-6">
           <h3 className="text-xl font-semibold mb-6">Reader Reviews</h3>
           {error && !reviews.length ? (
@@ -322,7 +355,6 @@ export default function ReviewSection({ novelId }) {
           )}
         </div>
 
-        {/* Review Form */}
         <div className="mt-8 px-6">
           {status === "unauthenticated" ? (
             <div className="text-center p-4 bg-gray-50 rounded-lg">

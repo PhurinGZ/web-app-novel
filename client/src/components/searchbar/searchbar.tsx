@@ -59,7 +59,7 @@ const SearchPage: React.FC = () => {
       if (data.success) {
         // Properly categorize the results based on the type field from the database
 
-        console.log(data)
+        // console.log(data)
         setResults({
           novels: data.data.filter((item: Novel) => item.type === 'novel') || [],
           webtoons: data.data.filter((item: Novel) => item.type === 'webtoon') || [],
@@ -74,7 +74,7 @@ const SearchPage: React.FC = () => {
     }
   };
 
-  console.log(results)
+  // console.log(results)
 
   const debouncedFetch = debounce(fetchResults, 300);
 
