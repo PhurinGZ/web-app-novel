@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Novel'
   }],  
+  liked_novels: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Novel'
+  }],  
   createdAt: {
     type: Date,
     default: Date.now,

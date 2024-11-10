@@ -10,8 +10,7 @@ const chapterSchema = new mongoose.Schema({
     ref: 'Novel' // Many-to-One relationship with Novel
   },
   content: {
-    type: Array, // Assuming 'blocks' can be represented as an array
-    default: []
+    type: String, 
   },
   createdAt: {
     type: Date,

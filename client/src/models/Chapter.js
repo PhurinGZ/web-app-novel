@@ -1,39 +1,39 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const chapterSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   novel: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Novel' // Many-to-One relationship with Novel
+    ref: "Novel", // Many-to-One relationship with Novel
   },
   content: {
-    type: Array, // Assuming 'blocks' can be represented as an array
-    default: []
+    type: String, 
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   updatedAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   publishedAt: {
-    type: Date
+    type: Date,
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: "User",
   },
   updatedBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }
+    ref: "User",
+  },
 });
 
-const Chapter = mongoose.model('Chapter', chapterSchema);
+const Chapter =
+  mongoose.models.Chapter || mongoose.model("Chapter", chapterSchema);
 
 module.exports = Chapter;

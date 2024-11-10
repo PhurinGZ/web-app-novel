@@ -1,8 +1,8 @@
 // components/RichTextEditor.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
-import "./style.scss"
+import "./style.scss";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -13,6 +13,11 @@ interface RichTextEditorProps {
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
   const [editorHtml, setEditorHtml] = useState(value);
+
+  // Update editor content when `value` prop changes
+  useEffect(() => {
+    setEditorHtml(value);
+  }, [value]);
 
   const handleChange = (html: string) => {
     setEditorHtml(html);
@@ -36,7 +41,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
   };
 
   return (
-    <div className="min-h-[500px] ">
+    <div className="min-h-[500px]">
       <ReactQuill
         theme="snow"
         value={editorHtml}
@@ -58,7 +63,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
           "image",
           "video",
         ]}
-        
       />
     </div>
   );

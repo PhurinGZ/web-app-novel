@@ -1,11 +1,15 @@
 // user.tsx
 import React from "react";
 import { User, Link } from "@nextui-org/react";
+import { useSession } from "next-auth/react";
 
 export default function App() {
+
+  const {data: session} = useSession()
+
   return (
     <User
-      name="Phurin Gannedgad"
+      name={session?.user?.name}
       description={(
         <Link href="https://github.com/PhurinGZ" size="sm" isExternal>
           @PhurinGZ
