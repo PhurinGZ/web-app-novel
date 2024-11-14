@@ -1,6 +1,6 @@
 // pages/api/novels/route.tsx
 import { NextApiRequest, NextApiResponse } from "next";
-import dbConnect from "@/utils/dbConnect";
+import dbConnect from "@/lib/dbConnect";
 import Novel from "@/models/Novel"; // Adjust the import path to where your model is stored
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

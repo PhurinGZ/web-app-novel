@@ -1,103 +1,98 @@
-import { Button, Select, SelectItem } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { Select, SelectItem, Button } from "@nextui-org/react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import useSWR from "swr";
 
-interface DropdownProps {
-  novelId: string; // Updated type
-  id: String;
-}
-
-const Dropdown = ({ novelId, id }: DropdownProps) => {
+const Dropdown = ({ novelId, id }) => {
   const router = useRouter();
-  const [selectedChapterId, setSelectedChapterId] = useState(id);
-  const [dataDrop, setDataDrop] = useState<any[]>([]);
-
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const [selectedChapterId, setSelectedChapterId] = React.useState(id);
+  const [chapters, setChapters] = React.useState([]);
+  
+  const fetcher = (url) => fetch(url).then((res) => res.json());
   const { data, error } = useSWR(
     `http://localhost:3001/api/novels/${novelId}`,
     fetcher
   );
 
-  useEffect(() => {
-    if (data) {
-      console.log("Data received:", data);
-      if (data.chapters) {
-        setDataDrop(data?.chapters);
-      }
+  React.useEffect(() => {
+    if (data?.chapters) {
+      setChapters(data.chapters);
     }
   }, [data]);
 
-  console.log(dataDrop);
-
-  if (error) return <div>Error loading data</div>;
-  if (!data) return <div>Loading...</div>;
-
-  const currentChapterIndex = dataDrop.findIndex(
+  const currentIndex = chapters.findIndex(
     (chapter) => chapter._id === selectedChapterId
   );
-  const isPreviousDisabled = currentChapterIndex <= 0;
-  const isNextDisabled = currentChapterIndex >= dataDrop.length - 1;
 
-  const handleSelectChange = (value: string) => {
-    const selected = dataDrop[currentChapterIndex]
-    setSelectedChapterId(selected._id);
+  const handleChapterChange = (value) => {
+    setSelectedChapterId(value);
     router.push(`/chapter/${value}`);
-    console.log(selected._id)
   };
 
-  const handlePrevious = () => {
-    if (!isPreviousDisabled) {
-      const previousChapter = dataDrop[currentChapterIndex - 1];
-      setSelectedChapterId(previousChapter._id);
-      router.push(`/chapter/${previousChapter._id}`);
+  const handleNavigation = (direction) => {
+    const newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+    if (newIndex >= 0 && newIndex < chapters.length) {
+      const targetChapter = chapters[newIndex];
+      setSelectedChapterId(targetChapter._id);
+      router.push(`/chapter/${targetChapter._id}`);
     }
   };
 
-  const handleNext = () => {
-    if (!isNextDisabled) {
-      const nextChapter = dataDrop[currentChapterIndex + 1];
-      setSelectedChapterId(nextChapter._id);
-      router.push(`/chapter/${nextChapter._id}`);
-    }
-  };
+  if (error) {
+    return (
+      <div className="p-4 bg-red-50 text-red-600 rounded-lg text-center">
+        Error loading chapters
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white rounded-t-lg p-3 border-b sticky top-0 z-10 h-18">
-      <div className="flex flex-col md:flex-row items-center justify-between">
-        <div className="w-full md:w-auto mb-2 md:mb-0">
-          <Select
-            label="Chapter"
-            placeholder="Select chapter"
-            className="w-full md:w-96"
-            selectedKeys={[selectedChapterId]}
-            disabledKeys={[selectedChapterId]}
-            onChange={e => handleSelectChange(e.target.value)}
-            size="sm"
-          >
-            {dataDrop.map((chapter) => (
-              <SelectItem key={chapter._id} value={chapter._id}>
-                {chapter.name}
-              </SelectItem>
-            ))}
-          </Select>
-        </div>
-        <div className="flex w-full md:w-auto justify-between md:justify-end space-x-2">
-          <Button
-            onClick={handlePrevious}
-            disabled={isPreviousDisabled}
-            className="w-full md:w-auto"
-          >
-            Previous
-          </Button>
-          <Button
-            onClick={handleNext}
-            disabled={isNextDisabled}
-            className="w-full md:w-auto"
-          >
-            Next
-          </Button>
-        </div>
+    <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+      <div className="flex-1 min-w-0">
+        <Select
+          label="Chapter"
+          placeholder="Select chapter"
+          selectedKeys={[selectedChapterId]}
+          disabledKeys={[selectedChapterId]}
+          onChange={(e) => handleChapterChange(e.target.value)}
+          className="w-full"
+          size="sm"
+          variant="bordered"
+        >
+          {chapters.map((chapter) => (
+            <SelectItem 
+              key={chapter._id} 
+              value={chapter._id}
+              className="py-2 px-3"
+            >
+              {chapter.name}
+            </SelectItem>
+          ))}
+        </Select>
+      </div>
+      
+      <div className="flex items-center gap-2">
+        <Button
+          variant="bordered"
+          size="sm"
+          onClick={() => handleNavigation('prev')}
+          isDisabled={currentIndex <= 0}
+          className="min-w-[100px]"
+          startContent={<ChevronLeft className="w-4 h-4" />}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="bordered"
+          size="sm"
+          onClick={() => handleNavigation('next')}
+          isDisabled={currentIndex >= chapters.length - 1}
+          className="min-w-[100px]"
+          endContent={<ChevronRight className="w-4 h-4" />}
+        >
+          Next
+        </Button>
       </div>
     </div>
   );

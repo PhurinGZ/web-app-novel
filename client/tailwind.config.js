@@ -12,6 +12,7 @@ module.exports = {
     // Or if using `src` directory:
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,jsx,ts,tsx,json}",
   ],
   theme: {
     extend: {
@@ -19,5 +20,5 @@ module.exports = {
     },
   },
   darkMode: "class",
-  plugins: [nextui()],
+  plugins: [nextui(), require("@tailwindcss/typography")],
 };

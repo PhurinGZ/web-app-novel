@@ -1,6 +1,6 @@
 // src/app/api/signup/route.tsx
 
-import dbConnect from "../../../utils/dbConnect";
+import dbConnect from "../../../lib/dbConnect";
 import User from "../../../models/User";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";

@@ -1,4 +1,4 @@
-import dbConnect from "@/utils/dbConnect";
+import dbConnect from "@/lib/dbConnect";
 import Category from "@/models/Category";
 import Novel from "@/models/Novel"; // Import the Rate model
 import Rate from "@/models/Rate"

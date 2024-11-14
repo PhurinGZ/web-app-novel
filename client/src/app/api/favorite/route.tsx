@@ -1,5 +1,5 @@
 // app/api/favorite/route.tsx
-import dbConnect from "@/utils/dbConnect";
+import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import Novel from "@/models/Novel";
 import { getServerSession } from "next-auth/next";

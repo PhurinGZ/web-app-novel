@@ -1,5 +1,5 @@
 // app/api/novels/reviews/route.tsx
-import dbConnect from "@/utils/dbConnect";
+import dbConnect from "@/lib/dbConnect";
 import Novel from "@/models/Novel";
 import Review from "@/models/Review";
 import { NextResponse } from "next/server";

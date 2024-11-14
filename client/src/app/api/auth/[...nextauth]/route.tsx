@@ -4,7 +4,7 @@ import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextApiHandler } from "next";
 import User from "../../../../models/User"; // Adjust path based on your structure
-import dbConnect from "../../../../utils/dbConnect"; // Ensure MongoDB connection
+import dbConnect from "../../../../lib/dbConnect"; // Ensure MongoDB connection
 import bcrypt from "bcryptjs";
 
 interface UserType {

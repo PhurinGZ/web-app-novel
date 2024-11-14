@@ -1,4 +1,4 @@
-import dbConnect from "@/utils/dbConnect";
+import dbConnect from "@/lib/dbConnect";
 import Comment from "@/models/Comment";
 import { getServerSession } from "next-auth/next";
 import { authOption } from "@/app/api/auth/[...nextauth]/route";

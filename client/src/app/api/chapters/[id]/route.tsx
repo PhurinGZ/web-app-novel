@@ -1,5 +1,5 @@
 // pages/api/chapters/[id].js (for GET, PUT, DELETE on a specific chapter)
-import dbConnect from "@/utils/dbConnect";
+import dbConnect from "@/lib/dbConnect";
 import Chapter from "@/models/Chapter";
 import { NextResponse } from "next/server";
 

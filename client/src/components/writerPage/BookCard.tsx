@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 interface Props {
   id: number;
@@ -26,13 +27,16 @@ function BookCard({
   commentCount,
   image,
 }: Props) {
+  const router = useRouter()
+
+  // console.log(id)
   return (
     <div className="w-full ">
       <div className="mt-4 border border-gray-300 rounded-md p-4 md:border-0 flex  flex-col md:flex-row md:justify-between">
         <Link href={"#"} className="flex w-full md:1/2">
           <div className="mr-4 h-fit">
             <Image
-              src={image}
+              src={"/image/imageBook1.png"}
               height={50}
               width={50}
               alt="book_cover"
@@ -100,7 +104,7 @@ function BookCard({
             </div>
           </div>
           <div className="flex items-end justify-end mt-4 md:ml-8">
-            <Button color="warning" size="sm" className="mr-2">
+            <Button color="warning" size="sm" className="mr-2" onClick={() => router.push(`/book/${id}`)}>
               <Image src={"/icon/edit.svg"} width={15} height={15} alt="edit" />
             </Button>
             <Button color="danger" size="sm" className="mr-2">
