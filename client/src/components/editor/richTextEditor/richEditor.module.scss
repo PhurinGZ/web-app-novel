@@ -1,0 +1,65 @@
+/* styles/richEditor.module.css */
+.richEditor {
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+  
+  .editorContent {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  
+  .paragraph, .heading {
+    margin-bottom: 1em;
+  }
+  
+  .textLeft { 
+    text-align: left; 
+  }
+  
+  .textCenter { 
+    text-align: center; 
+  }
+  
+  .textRight { 
+    text-align: right; 
+  }
+  
+  .indent1 { 
+    margin-left: 20px; 
+  }
+  
+  .indent2 { 
+    margin-left: 40px; 
+  }
+  
+  .textIndent { 
+    text-indent: 40px; 
+  }
+  
+  .menuBar {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .divider {
+    width: 1px;
+    height: 1.5rem;
+    background-color: #d1d5db;
+    margin: 0 0.5rem;
+  }
+  
+  .menuButton {
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+  }
+  
+  .menuButton:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .menuButtonActive {
+    background-color: #e5e7eb;
+  }

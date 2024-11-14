@@ -1,3 +1,4 @@
+//readNovel.tsx
 import React, { useState, useEffect } from "react";
 import useSWR from "swr";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -7,6 +8,7 @@ import Comments from "@/components/readNovel/comments/comments";
 import EditChapterButton from "./editChapterButton";
 import Dropdown from "./dropdown";
 import { processNovelContent } from "./contentProcessor";
+import "./style.scss";
 
 const ReadNovel = ({ _id }) => {
   const [dataNovel, setDataNovel] = useState(null);
@@ -123,7 +125,7 @@ const ReadNovel = ({ _id }) => {
                     {dataNovel?.name}
                   </h1>
                   <div
-                    className="prose prose-neutral max-w-full break-words overflow-hidden whitespace-pre-wrap"
+                    className="prose prose-neutral max-w-full break-words overflow-hidden whitespace-pre-wrap editor-content"
                     dangerouslySetInnerHTML={{ __html: dataNovel?.content }}
                   />
                 </div>

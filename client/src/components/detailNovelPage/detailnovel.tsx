@@ -1,13 +1,24 @@
+//detaiNovel.tsx
 import React, { useEffect, useState } from "react";
 import { Grid } from "@mui/material";
 import Image from "next/image";
-import { Link } from "@nextui-org/react";
+import {
+  Link,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+} from "@nextui-org/react";
 import useSWR from "swr";
 import Loading from "@/components/loading/loading";
 import {
   HeartIcon,
   BookmarkIcon,
   PencilIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import {
   HeartIcon as HeartIconSolid,
@@ -26,6 +37,11 @@ interface NovelStats {
   bookshelfCount: number;
   isLiked: boolean;
   isBookmarked: boolean;
+}
+
+interface Chapter {
+  _id: string;
+  name: string;
 }
 
 interface DataCardNovel {
@@ -59,9 +75,15 @@ function DetailNovel({ _id }: Props): JSX.Element {
     isLiked: false,
     isBookmarked: false,
   });
+  const [chapterToDelete, setChapterToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
-  const { data, error } = useSWR(
+  const { data, error, mutate } = useSWR(
     `http://localhost:3001/api/novels/${_id}`,
     fetcher
   );
@@ -134,7 +156,42 @@ function DetailNovel({ _id }: Props): JSX.Element {
   };
 
   const handleAddChapter = () => {
-    router.push(`/novel/${dataNovel?._id}/add-chapter`);
+    router.push(`${dataNovel?._id}/add-chapter`);
+  };
+  const handleDeleteClick = (chapter: Chapter) => {
+    setChapterToDelete({ id: chapter._id, name: chapter.name });
+    onOpen();
+  };
+
+  const handleDeleteChapter = async () => {
+    if (!chapterToDelete || !dataNovel?._id) return;
+
+    try {
+      setIsDeleting(true);
+      const response = await fetch(
+        `/api/chapters?id=${chapterToDelete.id}&novelId=${dataNovel._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.status === 200) {
+        // Refresh the novel data to update chapters list
+        await mutate();
+        onClose();
+        alert("Chapter deleted successfully");
+      } else {
+        throw new Error(data.message || "Failed to delete chapter");
+      }
+    } catch (error) {
+      console.error("Error deleting chapter:", error);
+      alert("Failed to delete chapter. Please try again.");
+    } finally {
+      setIsDeleting(false);
+      setChapterToDelete(null);
+    }
   };
 
   if (error) return <div>Failed to load</div>;
@@ -262,15 +319,39 @@ function DetailNovel({ _id }: Props): JSX.Element {
                   <div className="mt-2 space-y-2">
                     {dataNovel?.chapters?.length ? (
                       dataNovel.chapters.map((chapter, index) => (
-                        <Link
-                          href={`/chapter/${chapter._id}`}
+                        <div
                           key={index}
-                          className="block p-3 bg-white hover:bg-gray-50 rounded-md transition-colors"
+                          className="flex items-center justify-between p-3 bg-white hover:bg-gray-50 rounded-md transition-colors"
                         >
-                          <h3 className="text-gray-800 hover:text-blue-600">
-                            {chapter?.name}
-                          </h3>
-                        </Link>
+                          <Link
+                            href={`/chapter/${chapter._id}`}
+                            className="flex-grow"
+                          >
+                            <h3 className="text-gray-800 hover:text-blue-600">
+                              {chapter?.name}
+                            </h3>
+                          </Link>
+                          {isOwner && (
+                            <div className="flex items-center gap-2 ml-4">
+                              <button
+                                onClick={() =>
+                                  router.push(`/chapter/${chapter._id}/edit`)
+                                }
+                                className="p-2 text-blue-500 hover:text-blue-600 rounded-full hover:bg-blue-50"
+                                aria-label="Edit chapter"
+                              >
+                                <PencilIcon className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteClick(chapter)}
+                                className="p-2 text-red-500 hover:text-red-600 rounded-full hover:bg-red-50"
+                                aria-label="Delete chapter"
+                              >
+                                <TrashIcon className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       ))
                     ) : (
                       <div className="text-center text-gray-500 mt-4 text-2xl">
@@ -279,6 +360,35 @@ function DetailNovel({ _id }: Props): JSX.Element {
                     )}
                   </div>
                 </div>
+
+                {/* Delete Confirmation Modal */}
+                <Modal isOpen={isOpen} onClose={onClose} backdrop="blur">
+                  <ModalContent>
+                    <ModalHeader>Confirm Delete Chapter</ModalHeader>
+                    <ModalBody>
+                      Are you sure you want to delete chapter &quot;
+                      {chapterToDelete?.name}&quot;? This action cannot be
+                      undone.
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button
+                        color="default"
+                        variant="light"
+                        onPress={onClose}
+                        disabled={isDeleting}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        color="danger"
+                        onPress={handleDeleteChapter}
+                        isLoading={isDeleting}
+                      >
+                        Delete
+                      </Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </Modal>
 
                 {dataNovel?._id ? (
                   <div className="mt-6">

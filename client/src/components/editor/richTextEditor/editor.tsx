@@ -1,3 +1,4 @@
+//richtexteditor.tsx
 import React, { useState, useEffect, useRef } from "react";
 import { EditorState, Transaction, Plugin } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
@@ -21,6 +22,7 @@ import {
   MinusSquare,
 } from "lucide-react";
 import "./style.scss";
+// import styles from "./richEditor.module.css";
 
 // Schema definition remains the same as before
 const nodes = {
