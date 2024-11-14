@@ -152,7 +152,7 @@ function DetailNovel({ _id }: Props): JSX.Element {
   };
 
   const handleEdit = () => {
-    router.push(`/novel/edit/${dataNovel?._id}`);
+    router.push(`/book/${dataNovel?._id}/edit`);
   };
 
   const handleAddChapter = () => {

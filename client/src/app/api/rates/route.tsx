@@ -1,7 +1,7 @@
-// app/api/categories/route.ts
+// app/api/rates/route.ts
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import Category from "@/models/Category";
+import Rate from "@/models/Rate";
 import { getServerSession } from "next-auth";
 import { authOption } from "@/app/api/auth/[...nextauth]/route";
 
@@ -15,15 +15,15 @@ export async function GET() {
   await dbConnect();
 
   try {
-    const categories = await Category.find({})
+    const rates = await Rate.find({})
       .sort({ name: 1 }) // Sort alphabetically by name
-      .select('name nameThai'); // Only return id, name and nameThai fields
+      .select('name'); // Only return id and name fields
     
-    return NextResponse.json({ categories }, { status: 200 });
+    return NextResponse.json({ rates }, { status: 200 });
   } catch (error) {
-    console.error("Fetch categories error:", error);
+    console.error("Fetch rates error:", error);
     return NextResponse.json(
-      { message: "Error fetching categories" },
+      { message: "Error fetching rates" },
       { status: 500 }
     );
   }
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { name, nameThai } = body;
+    const { name } = body;
 
     // Validation
     if (!name?.trim()) {
@@ -50,29 +50,28 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if category already exists
-    const existingCategory = await Category.findOne({ name: name.trim() });
-    if (existingCategory) {
+    // Check if rate already exists
+    const existingRate = await Rate.findOne({ name: name.trim() });
+    if (existingRate) {
       return NextResponse.json(
-        { message: "Category already exists" },
+        { message: "Rate already exists" },
         { status: 400 }
       );
     }
 
-    // Create category
-    const category = await Category.create({
+    // Create rate
+    const rate = await Rate.create({
       name: name.trim(),
-      nameThai: nameThai?.trim(),
       createdBy: session.user.id,
       updatedBy: session.user.id,
       publishedAt: new Date(),
     });
 
-    return NextResponse.json(category, { status: 201 });
+    return NextResponse.json(rate, { status: 201 });
   } catch (error) {
-    console.error("Create category error:", error);
+    console.error("Create rate error:", error);
     return NextResponse.json(
-      { message: "Error creating category" },
+      { message: "Error creating rate" },
       { status: 500 }
     );
   }

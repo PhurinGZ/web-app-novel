@@ -1,7 +1,7 @@
-// app/api/categories/[id]/route.ts
+// app/api/rates/[id]/route.ts
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import Category from "@/models/Category";
+import Rate from "@/models/Rate";
 import { getServerSession } from "next-auth";
 import { authOption } from "@/app/api/auth/[...nextauth]/route";
 
@@ -18,19 +18,19 @@ export async function GET(
   await dbConnect();
 
   try {
-    const category = await Category.findById(params.id);
+    const rate = await Rate.findById(params.id);
 
-    if (!category) {
+    if (!rate) {
       return NextResponse.json(
-        { message: "Category not found" },
+        { message: "Rate not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ category }, { status: 200 });
+    return NextResponse.json({ rate }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { message: "Error fetching category" },
+      { message: "Error fetching rate" },
       { status: 500 }
     );
   }
@@ -50,7 +50,7 @@ export async function PUT(
 
   try {
     const body = await req.json();
-    const { name, nameThai } = body;
+    const { name } = body;
 
     // Validation
     if (!name?.trim()) {
@@ -60,29 +60,28 @@ export async function PUT(
       );
     }
 
-    // Update category
-    const updatedCategory = await Category.findByIdAndUpdate(
+    // Update rate
+    const updatedRate = await Rate.findByIdAndUpdate(
       params.id,
       {
         name: name.trim(),
-        nameThai: nameThai?.trim(),
         updatedBy: session.user.id,
         updatedAt: new Date(),
       },
       { new: true }
     );
 
-    if (!updatedCategory) {
+    if (!updatedRate) {
       return NextResponse.json(
-        { message: "Category not found" },
+        { message: "Rate not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ category: updatedCategory }, { status: 200 });
+    return NextResponse.json({ rate: updatedRate }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { message: "Error updating category" },
+      { message: "Error updating rate" },
       { status: 500 }
     );
   }
@@ -101,22 +100,22 @@ export async function DELETE(
   await dbConnect();
 
   try {
-    const category = await Category.findByIdAndDelete(params.id);
+    const rate = await Rate.findByIdAndDelete(params.id);
 
-    if (!category) {
+    if (!rate) {
       return NextResponse.json(
-        { message: "Category not found" },
+        { message: "Rate not found" },
         { status: 404 }
       );
     }
 
     return NextResponse.json(
-      { message: "Category deleted successfully" },
+      { message: "Rate deleted successfully" },
       { status: 200 }
     );
   } catch (error) {
     return NextResponse.json(
-      { message: "Error deleting category" },
+      { message: "Error deleting rate" },
       { status: 500 }
     );
   }

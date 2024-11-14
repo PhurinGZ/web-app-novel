@@ -7,8 +7,10 @@ import User from "@/components/writerPage/user";
 import Tabs from "./taps";
 import { Button } from "@nextui-org/react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 function WriterPage() {
+  const router = useRouter()
   return (
     <div>
       <main>
@@ -17,7 +19,7 @@ function WriterPage() {
             <h1 className="text-3xl font-bold text-start mb-8 ml-3.5 ">
               หน้านักเขียน
             </h1>
-            <Button className="bg-[#F5A524] mr-8">
+            <Button className="bg-[#F5A524] mr-8" onClick={() => router.push("/book/add-novel")}>
               <Image src={"/icon/plus.svg"} height={10} width={10} alt="plus" />{" "}
               <span>เขียนนิยาย</span>
             </Button>

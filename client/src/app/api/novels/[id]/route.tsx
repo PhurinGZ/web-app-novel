@@ -11,7 +11,10 @@ import { Types } from "mongoose";
 const VALID_TYPES = ["novel", "webtoon"];
 const VALID_STATUSES = ["ongoing", "completed", "dropped"];
 
-export async function GET() {
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   const session = await getServerSession(authOption);
 
   if (!session) {
@@ -21,22 +24,30 @@ export async function GET() {
   await dbConnect();
 
   try {
-    const novels = await Novel.find({})
+    const novel = await Novel.findById(params.id)
       .populate("createdBy", "username")
       .populate("rate", "name")
       .populate("category", "name nameThai")
-      .sort({ createdAt: -1 });
-    return NextResponse.json({ novels }, { status: 200 });
+      .populate("chapters")
+      .populate("reviews");
+
+    if (!novel) {
+      return NextResponse.json({ message: "Novel not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ novel }, { status: 200 });
   } catch (error) {
-    console.error("Fetch novels error:", error);
     return NextResponse.json(
-      { message: "Error fetching novels" },
+      { message: "Error fetching novel" },
       { status: 500 }
     );
   }
 }
 
-export async function POST(req: Request) {
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   const session = await getServerSession(authOption);
 
   if (!session) {
@@ -44,8 +55,22 @@ export async function POST(req: Request) {
   }
 
   await dbConnect();
-
+  
   try {
+    const novel = await Novel.findById(params.id);
+
+    if (!novel) {
+      return NextResponse.json({ message: "Novel not found" }, { status: 404 });
+    }
+
+    // Check ownership
+    if (novel.createdBy.toString() !== session.user.id) {
+      return NextResponse.json({
+        message: "Not authorized to edit this novel",
+        status: 403,
+      });
+    }
+
     const body = await req.json();
     const { name, detail, type, status, tags, rate, category } = body;
 
@@ -96,45 +121,72 @@ export async function POST(req: Request) {
       return NextResponse.json({ errors }, { status: 400 });
     }
 
-    // Create novel with validated data
-    const novel = await Novel.create({
-      name: name.trim(),
-      detail: detail.trim(),
-      type,
-      status: status || "ongoing",
-      tags: Array.isArray(tags) ? tags.filter(Boolean).map(tag => tag.trim()) : [],
-      rate: rate || null,
-      category: category || null,
-      createdBy: session.user.id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      publishedAt: new Date(),
-    });
-
-    // Populate the created novel with related data
-    const populatedNovel = await Novel.findById(novel._id)
+    // Update novel
+    const updatedNovel = await Novel.findByIdAndUpdate(
+      params.id,
+      {
+        name: name.trim(),
+        detail: detail.trim(),
+        type,
+        status,
+        tags: Array.isArray(tags) ? tags.filter(Boolean).map(tag => tag.trim()) : [],
+        rate: rate || null,
+        category: category || null,
+        updatedAt: new Date(),
+        updatedBy: session.user.id,
+      },
+      { new: true }
+    )
       .populate("createdBy", "username")
       .populate("rate", "name")
       .populate("category", "name nameThai");
 
-    return NextResponse.json(populatedNovel, { status: 201 });
+    return NextResponse.json({ novel: updatedNovel }, { status: 200 });
   } catch (error) {
-    console.error("Create novel error:", error);
-    
-    // Handle Mongoose validation errors
-    if (error.name === "ValidationError") {
-      const validationErrors = Object.keys(error.errors).reduce(
-        (acc: { [key: string]: string }, key: string) => {
-          acc[key] = error.errors[key].message;
-          return acc;
-        },
-        {}
-      );
-      return NextResponse.json({ errors: validationErrors }, { status: 400 });
+    console.error("Update novel error:", error);
+    return NextResponse.json(
+      { message: "Error updating novel" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const session = await getServerSession(authOption);
+
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  await dbConnect();
+
+  try {
+    const novel = await Novel.findById(params.id);
+
+    if (!novel) {
+      return NextResponse.json({ message: "Novel not found" }, { status: 404 });
     }
 
+    // Check ownership
+    if (novel.createdBy.toString() !== session.user.id) {
+      return NextResponse.json({
+        message: "Not authorized to delete this novel",
+        status: 403,
+      });
+    }
+
+    await Novel.deleteOne({ _id: params.id });
+    return NextResponse.json({
+      message: "Novel deleted successfully",
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Delete novel error:", error);
     return NextResponse.json(
-      { message: "Error creating novel" },
+      { message: "Error deleting novel" },
       { status: 500 }
     );
   }
