@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
 // Get all novels
 router.get('/', async (req, res) => {
   try {
-    const novels = await Novel.find().populate('chapters').populate('category').populate('user_favorites');
+    const novels = await Novel.find().populate('chapters').populate('category').populate('user_favorites').populate('rate');
     res.status(200).json(novels);
   } catch (error) {
     res.status(500).json({ message: error.message });
