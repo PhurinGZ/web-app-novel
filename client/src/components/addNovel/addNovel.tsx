@@ -61,7 +61,7 @@ export default function AddNovel(): JSX.Element {
         const categoriesData = await categoriesResponse.json();
 
         setRates(ratesData.rates || []);
-        setCategories(categoriesData.categories || []);
+        setCategories(categoriesData.data || []);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load rates and categories");
@@ -240,7 +240,7 @@ export default function AddNovel(): JSX.Element {
                   className="w-full"
                 >
                   {categories.map((category) => (
-                    <SelectItem key={category._id} value={category._id}>
+                    <SelectItem key={category.id} value={category.id}>
                       {category.nameThai
                         ? `${category.name} (${category.nameThai})`
                         : category.name}

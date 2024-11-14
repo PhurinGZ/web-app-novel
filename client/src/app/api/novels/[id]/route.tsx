@@ -1,3 +1,4 @@
+//app/api/novels/[id]/route.tsx
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Novel from "@/models/Novel";
@@ -48,14 +49,14 @@ export async function PUT(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOption);
+  const userSession = await getServerSession(authOption); // Renamed to userSession
 
-  if (!session) {
+  if (!userSession) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   await dbConnect();
-  
+
   try {
     const novel = await Novel.findById(params.id);
 
@@ -64,7 +65,7 @@ export async function PUT(
     }
 
     // Check ownership
-    if (novel.createdBy.toString() !== session.user.id) {
+    if (novel.createdBy.toString() !== userSession.user.id) {
       return NextResponse.json({
         message: "Not authorized to edit this novel",
         status: 403,
@@ -121,27 +122,63 @@ export async function PUT(
       return NextResponse.json({ errors }, { status: 400 });
     }
 
-    // Update novel
-    const updatedNovel = await Novel.findByIdAndUpdate(
-      params.id,
-      {
-        name: name.trim(),
-        detail: detail.trim(),
-        type,
-        status,
-        tags: Array.isArray(tags) ? tags.filter(Boolean).map(tag => tag.trim()) : [],
-        rate: rate || null,
-        category: category || null,
-        updatedAt: new Date(),
-        updatedBy: session.user.id,
-      },
-      { new: true }
-    )
-      .populate("createdBy", "username")
-      .populate("rate", "name")
-      .populate("category", "name nameThai");
+    // Start a session for transaction
+    const dbSession = await Novel.startSession(); // Renamed to dbSession
+    dbSession.startTransaction();
 
-    return NextResponse.json({ novel: updatedNovel }, { status: 200 });
+    try {
+      // If the novel had a previous category, remove the novel from that category's novels array
+      if (novel.category) {
+        await Category.findByIdAndUpdate(
+          novel.category,
+          { $pull: { novels: novel._id } },
+          { session: dbSession }
+        );
+      }
+
+      // If a new category is being set, add the novel to that category's novels array
+      if (category) {
+        await Category.findByIdAndUpdate(
+          category,
+          { $addToSet: { novels: novel._id } },
+          { session: dbSession }
+        );
+      }
+
+      // Update novel
+      const updatedNovel = await Novel.findByIdAndUpdate(
+        params.id,
+        {
+          name: name.trim(),
+          detail: detail.trim(),
+          type,
+          status,
+          tags: Array.isArray(tags)
+            ? tags.filter(Boolean).map((tag) => tag.trim())
+            : [],
+          rate: rate || null,
+          category: category || null,
+          updatedAt: new Date(),
+          updatedBy: userSession.user.id, // Use userSession here
+        },
+        { new: true, session: dbSession }
+      )
+        .populate("createdBy", "username")
+        .populate("rate", "name")
+        .populate("category", "name nameThai");
+
+      // Commit the transaction
+      await dbSession.commitTransaction();
+
+      return NextResponse.json({ novel: updatedNovel }, { status: 200 });
+    } catch (error) {
+      // If there's an error, abort the transaction
+      await dbSession.abortTransaction();
+      throw error;
+    } finally {
+      // End the session
+      dbSession.endSession();
+    }
   } catch (error) {
     console.error("Update novel error:", error);
     return NextResponse.json(

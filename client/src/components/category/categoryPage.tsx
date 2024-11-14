@@ -1,3 +1,4 @@
+//component/categoryPage.tsx
 import React, { useEffect, useState } from "react";
 import Navbar from "@/components/navbar/navbar";
 import Footer from "../footer/footer";

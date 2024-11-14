@@ -102,7 +102,9 @@ export async function POST(req: Request) {
       detail: detail.trim(),
       type,
       status: status || "ongoing",
-      tags: Array.isArray(tags) ? tags.filter(Boolean).map(tag => tag.trim()) : [],
+      tags: Array.isArray(tags)
+        ? tags.filter(Boolean).map((tag) => tag.trim())
+        : [],
       rate: rate || null,
       category: category || null,
       createdBy: session.user.id,
@@ -110,6 +112,13 @@ export async function POST(req: Request) {
       updatedAt: new Date(),
       publishedAt: new Date(),
     });
+
+    // If category is provided, update the category to include this novel
+    if (category) {
+      await Category.findByIdAndUpdate(category, {
+        $addToSet: { novels: novel._id },
+      });
+    }
 
     // Populate the created novel with related data
     const populatedNovel = await Novel.findById(novel._id)
@@ -120,7 +129,7 @@ export async function POST(req: Request) {
     return NextResponse.json(populatedNovel, { status: 201 });
   } catch (error) {
     console.error("Create novel error:", error);
-    
+
     // Handle Mongoose validation errors
     if (error.name === "ValidationError") {
       const validationErrors = Object.keys(error.errors).reduce(

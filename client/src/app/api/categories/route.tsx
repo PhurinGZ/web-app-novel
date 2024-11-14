@@ -1,4 +1,3 @@
-// app/api/categories/route.ts
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Category from "@/models/Category";
@@ -16,16 +15,27 @@ export async function GET() {
 
   try {
     const categories = await Category.find({})
-      .sort({ name: 1 }) // Sort alphabetically by name
-      .select('name nameThai'); // Only return id, name and nameThai fields
+      .sort({ name: 1 })
+      .lean()
+      .select('_id name nameThai');
     
-    return NextResponse.json({ categories }, { status: 200 });
+    // Transform the data to match frontend expectations
+    const transformedCategories = categories.map(category => ({
+      id: category._id.toString(),
+      name: category.name,
+      nameThai: category.nameThai
+    }));
+    
+    return NextResponse.json({ 
+      success: true,
+      data: transformedCategories
+    }, { status: 200 });
   } catch (error) {
     console.error("Fetch categories error:", error);
-    return NextResponse.json(
-      { message: "Error fetching categories" },
-      { status: 500 }
-    );
+    return NextResponse.json({ 
+      success: false,
+      message: "Error fetching categories"
+    }, { status: 500 });
   }
 }
 
@@ -42,21 +52,23 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, nameThai } = body;
 
-    // Validation
     if (!name?.trim()) {
-      return NextResponse.json(
-        { message: "Name is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ 
+        success: false,
+        message: "Name is required"
+      }, { status: 400 });
     }
 
     // Check if category already exists
-    const existingCategory = await Category.findOne({ name: name.trim() });
+    const existingCategory = await Category.findOne({ 
+      name: { $regex: new RegExp(`^${name.trim()}$`, 'i') }
+    });
+    
     if (existingCategory) {
-      return NextResponse.json(
-        { message: "Category already exists" },
-        { status: 400 }
-      );
+      return NextResponse.json({ 
+        success: false,
+        message: "Category already exists"
+      }, { status: 400 });
     }
 
     // Create category
@@ -68,12 +80,19 @@ export async function POST(req: Request) {
       publishedAt: new Date(),
     });
 
-    return NextResponse.json(category, { status: 201 });
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: category._id.toString(),
+        name: category.name,
+        nameThai: category.nameThai
+      }
+    }, { status: 201 });
   } catch (error) {
     console.error("Create category error:", error);
-    return NextResponse.json(
-      { message: "Error creating category" },
-      { status: 500 }
-    );
+    return NextResponse.json({ 
+      success: false,
+      message: "Error creating category"
+    }, { status: 500 });
   }
 }

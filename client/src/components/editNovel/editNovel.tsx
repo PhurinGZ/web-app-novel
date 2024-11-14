@@ -62,9 +62,9 @@ export default function EditNovel({ id }: { id: string }): JSX.Element {
 
         const ratesData = await ratesResponse.json();
         const categoriesData = await categoriesResponse.json();
-
+        console.log(categoriesData)
         setRates(ratesData.rates || []);
-        setCategories(categoriesData.categories || []);
+        setCategories(categoriesData.data || []);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load rates and categories");
@@ -73,6 +73,8 @@ export default function EditNovel({ id }: { id: string }): JSX.Element {
 
     fetchData();
   }, []);
+
+  console.log(categories)
 
   // For EditNovel, update the useEffect that fetches novel data:
   useEffect(() => {
@@ -120,7 +122,7 @@ export default function EditNovel({ id }: { id: string }): JSX.Element {
 
       const data = await response.json();
 
-      console.log(data);
+      // console.log(data);
 
       if (response.ok) {
         router.push(`/book/${id}`);
@@ -166,7 +168,7 @@ export default function EditNovel({ id }: { id: string }): JSX.Element {
     return null;
   }
 
-//   console.log(novelData);
+  // console.log(novelData);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -268,7 +270,7 @@ export default function EditNovel({ id }: { id: string }): JSX.Element {
                   className="w-full"
                 >
                   {categories.map((category) => (
-                    <SelectItem key={category._id} value={category._id}>
+                    <SelectItem key={category.id} value={category.id}>
                       {category.nameThai
                         ? `${category.name} (${category.nameThai})`
                         : category.name}
