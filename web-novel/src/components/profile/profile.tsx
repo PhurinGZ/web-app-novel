@@ -1,3 +1,4 @@
+//profile.tsx
 "use client";
 import React, { useEffect } from "react";
 import { Avatar, Link } from "@nextui-org/react";

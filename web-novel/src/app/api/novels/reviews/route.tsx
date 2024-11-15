@@ -36,6 +36,8 @@ export async function GET(req: Request) {
       );
     }
 
+    // console.log("novelId",novelId)
+
     const novel = await Novel.findById(novelId).populate({
       path: "reviews",
       populate: {

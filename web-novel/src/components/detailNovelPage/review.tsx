@@ -18,34 +18,49 @@ interface Props {
   novelId: string;
 }
 
-interface Reviews {
+interface Review {
   _id: string;
+  user: {
+    _id: string;
+    image?: string;
+    username: string;
+  };
+  rating: number;
+  content: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+interface SessionUser {
+  image: string | undefined;
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  role: string;
+  novel_favorites: string[];
 }
 
 export default function ReviewSection({ novelId }: Props) {
   const { data: session, status } = useSession();
   const [ratingUser, setRatingUser] = useState(1);
   const [review, setReview] = useState("");
-  const [reviews, setReviews] = useState<Reviews | any>();
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [averageRating, setAverageRating] = useState(0);
   const [userHasReviewed, setUserHasReviewed] = useState(false);
   const [error, setError] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [editingReviewId, setEditingReviewId] = useState(null);
+  const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
 
   const router = useRouter();
 
-  const calculateAverageRating = (reviewsList: any[]) => {
-    if (!reviewsList.length) return 0;
-    const sum = reviewsList.reduce(
-      (acc: any, review: { rating: any }) => acc + review.rating,
-      0
-    );
+  const calculateAverageRating = (reviewsList: Review[]) => {
+    if (!reviewsList?.length) return 0;
+    const sum = reviewsList.reduce((acc, review) => acc + review.rating, 0);
     return sum / reviewsList.length;
   };
 
-  const formatDate = (dateString: string | number | Date) => {
+  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
@@ -70,9 +85,9 @@ export default function ReviewSection({ novelId }: Props) {
       if (data.reviews) {
         // Preserve the review being edited
         if (isEditing && editingReviewId) {
-          const updatedReviews = data.reviews.map((review: { _id: any }) =>
+          const updatedReviews = data.reviews.map((review: Review) =>
             review._id === editingReviewId
-              ? reviews.find((r: { _id: any }) => r._id === editingReviewId)
+              ? reviews.find((r) => r._id === editingReviewId) || review
               : review
           );
           setReviews(updatedReviews);
@@ -96,12 +111,6 @@ export default function ReviewSection({ novelId }: Props) {
 
   // Real-time updates for Reader Reviews section only
   useEffect(() => {
-    // const intervalId = setInterval(() => {
-
-    // }, 5000); // Poll every 5 seconds
-
-    // return () => clearInterval(intervalId);
-
     if (!isEditing) {
       // Don't fetch while editing to avoid conflicts
       fetchReviews();
@@ -111,8 +120,7 @@ export default function ReviewSection({ novelId }: Props) {
   useEffect(() => {
     if (session?.user && reviews.length > 0) {
       const userReview = reviews.find(
-        (review: { user: { _id: string } }) =>
-          review.user?._id === session.user.id
+        (review) => review.user?._id === session.user.id
       );
       setUserHasReviewed(!!userReview);
 
@@ -131,8 +139,7 @@ export default function ReviewSection({ novelId }: Props) {
 
   const handleEdit = () => {
     const userReview = reviews.find(
-      (review: { user: { _id: string } }) =>
-        review.user?._id === session?.user.id
+      (review) => review.user?._id === session?.user.id
     );
 
     if (userReview) {
@@ -166,9 +173,15 @@ export default function ReviewSection({ novelId }: Props) {
     setIsLoading(true);
     setError("");
 
-    const tempReview = {
+    const user = session?.user as SessionUser;
+
+    const tempReview: Review = {
       _id: editingReviewId || `temp-${Date.now()}`,
-      user: session?.user,
+      user: {
+        _id: user?.id || '',
+        image: user?.image,
+        username: user?.name || 'Anonymous'
+      },
       rating: ratingUser,
       content: review.trim(),
       createdAt: new Date().toISOString(),
@@ -176,9 +189,7 @@ export default function ReviewSection({ novelId }: Props) {
     };
 
     const optimisticReviews = isEditing
-      ? reviews.map((r: { _id: null }) =>
-          r._id === editingReviewId ? tempReview : r
-        )
+      ? reviews.map((r) => (r._id === editingReviewId ? tempReview : r))
       : [tempReview, ...reviews];
 
     setReviews(optimisticReviews);
@@ -316,7 +327,7 @@ export default function ReviewSection({ novelId }: Props) {
               </span>
             </div>
             <p className="text-sm text-gray-600 mt-2">
-              Based on {reviews.length} reviews
+              Based on {reviews?.length || 0} reviews
             </p>
           </div>
         </div>
@@ -325,84 +336,52 @@ export default function ReviewSection({ novelId }: Props) {
       <div className="w-full">
         <div className="reviews-list mt-8 px-6">
           <h3 className="text-xl font-semibold mb-6">Reader Reviews</h3>
-          {error && !reviews.length ? (
+          {error && !reviews?.length ? (
             <p className="text-red-500 text-center">{error}</p>
-          ) : reviews.length === 0 ? (
+          ) : reviews?.length === 0 ? (
             <p className="text-center text-gray-500 py-8">
               No reviews yet. Be the first to review!
             </p>
           ) : (
             <div className="space-y-6 max-h-60 overflow-y-auto">
-              {reviews.map(
-                (
-                  review: {
-                    _id: any;
-                    user: {
-                      image: string | undefined;
-                      username:
-                        | string
-                        | number
-                        | boolean
-                        | ReactElement<any, string | JSXElementConstructor<any>>
-                        | Iterable<ReactNode>
-                        | Promise<AwaitedReactNode>
-                        | null
-                        | undefined;
-                    };
-                    createdAt: string | number | Date;
-                    updatedAt: string | number | Date;
-                    rating: number | null | undefined;
-                    content:
-                      | string
-                      | number
-                      | boolean
-                      | ReactElement<any, string | JSXElementConstructor<any>>
-                      | Iterable<ReactNode>
-                      | ReactPortal
-                      | Promise<AwaitedReactNode>
-                      | null
-                      | undefined;
-                  },
-                  index: any
-                ) => (
-                  <div
-                    key={review._id || index}
-                    className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"
-                  >
-                    <div className="flex items-center gap-4 mb-3">
-                      <div className="flex-shrink-0">
-                        {review.user?.image && (
-                          <img
-                            src={review.user.image}
-                            alt={typeof review.user.username === "string" ? review.user.username : "User Avatar"}
-                            className="w-10 h-10 rounded-full"
-                          />
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          {review.user?.username}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {formatDate(review.createdAt)}
-                          {review.updatedAt && (
-                            <span className="italic ml-2">
-                              (Edited: {formatDate(review.updatedAt)})
-                            </span>
-                          )}
-                        </p>
-                      </div>
+              {reviews.map((review, index) => (
+                <div
+                  key={review._id || index}
+                  className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"
+                >
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="flex-shrink-0">
+                      {review.user?.image && (
+                        <img
+                          src={review.user.image}
+                          alt={review.user.username || "User Avatar"}
+                          className="w-10 h-10 rounded-full"
+                        />
+                      )}
                     </div>
-                    <Rating
-                      value={review.rating}
-                      readOnly
-                      precision={0.5}
-                      size="small"
-                    />
-                    <p className="mt-3 text-gray-700">{review.content}</p>
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {review.user?.username}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {formatDate(review.createdAt)}
+                        {review.updatedAt && (
+                          <span className="italic ml-2">
+                            (Edited: {formatDate(review.updatedAt)})
+                          </span>
+                        )}
+                      </p>
+                    </div>
                   </div>
-                )
-              )}
+                  <Rating
+                    value={review.rating}
+                    readOnly
+                    precision={0.5}
+                    size="small"
+                  />
+                  <p className="mt-3 text-gray-700">{review.content}</p>
+                </div>
+              ))}
             </div>
           )}
         </div>

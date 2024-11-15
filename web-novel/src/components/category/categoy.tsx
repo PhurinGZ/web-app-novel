@@ -1,4 +1,4 @@
-import  useSWR  from "swr";
+import useSWR from "swr";
 import Skeleton from "./skeleton";
 import { Key } from "react";
 
@@ -7,12 +7,14 @@ interface CategoryProps {
 }
 
 const Category: React.FC<CategoryProps> = ({ onClose }) => {
-  const fetcher = (url: string | URL | Request) => fetch(url).then((res) => res.json());
+  const fetcher = (url: string | URL | Request) =>
+    fetch(url).then((res) => res.json());
 
-  const { data: category, error: categoryError, isLoading } = useSWR(
-    `/api/categories`,
-    fetcher
-  );
+  const {
+    data: category,
+    error: categoryError,
+    isLoading,
+  } = useSWR(`/api/categories`, fetcher);
 
   return (
     <div className="absolute inset-0 mt-10 flex justify-center w-full">
@@ -33,21 +35,20 @@ const Category: React.FC<CategoryProps> = ({ onClose }) => {
                   <Skeleton className="w-full h-6" />
                 </div>
               ))
-            : category?.data?.map((c: { id: Key | null | undefined; name: string }) => (
-                <a
-                  key={c.id}
-                  href={`/category/${c.name}`}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  role="menuitem"
-                >
-                  <p className="text-base">{c.name}</p>
-                </a>
-              ))}
+            : category?.data?.map(
+                (c: { id: Key | null | undefined; name: string }) => (
+                  <a
+                    key={c.id}
+                    href={`/category/${c.name}`}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    role="menuitem"
+                  >
+                    <p className="text-base">{c.name}</p>
+                  </a>
+                )
+              )}
         </div>
       </div>
-      <button onClick={onClose} className="absolute top-0 right-0 m-4 p-2 bg-red-500 text-white rounded">
-        Close
-      </button>
     </div>
   );
 };
