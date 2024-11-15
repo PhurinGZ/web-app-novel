@@ -1,4 +1,3 @@
-// src/app/api/auth/[...nextauth]/auth.ts
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import User from "@/models/User";
@@ -14,17 +13,21 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password are required");
+        }
+
         try {
           await dbConnect();
 
           // Find the user by email
-          const user = await User.findOne({ email: credentials?.email });
+          const user = await User.findOne({ email: credentials.email });
           if (!user) {
             console.error("User not found");
             throw new Error("User not found");
           }
 
-          console.log("Password to compare:", credentials?.password);
+          console.log("Password to compare:", credentials.password);
           console.log("Hashed password:", user.password);
 
           // Compare password
@@ -45,8 +48,8 @@ export const authOptions: AuthOptions = {
             role: user.role,
             novel_favorites: user.novel_favorites,
           };
-        } catch (error: any) {
-          console.error("Authorize error:", error.message);
+        } catch (error) {
+          console.error("Authorize error:", error instanceof Error ? error.message : "Unknown error");
           return null;
         }
       },
