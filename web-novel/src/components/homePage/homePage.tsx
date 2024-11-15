@@ -11,7 +11,7 @@ import Loading from "@/components/loading/loading";
 function HomePage() {
   const [dataNovel, setDataNovel] = useState(null);
 
-  const fetcher = (url) => fetch(url).then((res) => res.json());
+  const fetcher = (url: string | Request | URL) => fetch(url).then((res) => res.json());
 
   const { data: novelData, error: novelError } = useSWR(
     "/api/novels",
@@ -50,7 +50,7 @@ function HomePage() {
             <Searchbar />
           </div> */}
           <div className="content-home">
-            {listNovelsData?.map((l, index) => (
+            {listNovelsData?.map((l: { nameListTH: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; novels: { id: number; name: string; desc: string; category: { name: String; }; rate: { name: String; }; rating: number[]; detail: string; tag: string; chapter: { id: number; name: string; content: string; }[]; createdBy: { username: String; }; public: boolean; updateAt: string; createAt: string; }[]; }, index: React.Key | null | undefined) => (
               <div key={index} className="content">
                 <h1 className="text-3xl font-bold mb-4">{l.nameListTH}</h1>
                 <div className="book-cover-home-page">

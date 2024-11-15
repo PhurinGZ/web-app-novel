@@ -6,6 +6,9 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
+// Mark route as dynamic
+export const dynamic = 'force-dynamic';
+
 // Make sure to export as named export, not default export
 export async function GET(
   request: Request,

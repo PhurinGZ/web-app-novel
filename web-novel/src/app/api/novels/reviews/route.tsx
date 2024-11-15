@@ -12,7 +12,7 @@ async function calculateAverageRating(novelId: string) {
   const novel = await Novel.findById(novelId).populate("reviews");
   if (!novel || !novel.reviews.length) return 0;
 
-  const totalRating = novel.reviews.reduce((sum, review) => {
+  const totalRating = novel.reviews.reduce((sum: any, review: { rating: any; }) => {
     return sum + (review.rating || 0);
   }, 0);
 

@@ -1,13 +1,15 @@
-import React from 'react';
-import { Button } from '@nextui-org/react';
-import { PenSquare } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import React from "react";
+import { Button } from "@nextui-org/react";
+import { PenSquare } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-const EditChapterButton = ({ 
-  chapterId, 
-  novelId,
-  isAuthor 
-}) => {
+interface Props {
+  chapterId: string;
+  novelId: string;
+  isAuthor: boolean;
+}
+
+const EditChapterButton = ({ chapterId, novelId, isAuthor }: Props) => {
   const router = useRouter();
 
   const handleEdit = () => {

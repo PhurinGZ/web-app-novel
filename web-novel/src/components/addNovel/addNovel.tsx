@@ -37,6 +37,7 @@ interface Category {
   _id: string;
   name: string;
   nameThai: string;
+  id: string;
 }
 
 export default function AddNovel(): JSX.Element {
@@ -123,7 +124,6 @@ export default function AddNovel(): JSX.Element {
   if (status === "loading") return <div>Loading...</div>;
   if (status === "unauthenticated") {
     router.push("/login");
-    return null;
   }
 
   console.log(novelData);

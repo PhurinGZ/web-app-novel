@@ -1,11 +1,15 @@
+// app/api/auth/me/route.ts
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../[...nextauth]/auth";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import Novel from "@/models/Novel";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+// Mark route as dynamic
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -18,7 +22,7 @@ export async function GET() {
 
     await dbConnect();
 
-    // First, let's find the user
+    // Find the user
     const user = await User.findOne({ email: session.user.email })
       .select("-password");
 
@@ -29,12 +33,12 @@ export async function GET() {
       );
     }
 
-    // Then, let's find all the novels that are in the user's favorites
+    // Find novels in user's favorites
     const populatedFavorites = await Novel.find({
-      _id: { $in: user.novel_favorites }
-    }).select(["name","detail"]);
+      _id: { $in: user.novel_favorites || [] }  // Add fallback for empty favorites
+    }).select(["name", "detail"]);
 
-    // Create the response with populated favorites
+    // Create response object
     const responseUser = {
       id: user._id,
       username: user.username,
@@ -42,16 +46,18 @@ export async function GET() {
       role: user.role,
       bio: user.bio,
       profilePicture: user.profilePicture,
-      novel_favorites: populatedFavorites, // This will contain all fields
+      novel_favorites: populatedFavorites,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
 
-    // Add debug logging
-    console.log('User favorites IDs:', user.novel_favorites);
-    console.log('Populated favorites:', populatedFavorites);
+    // For debugging in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('User favorites IDs:', user.novel_favorites);
+      console.log('Populated favorites:', populatedFavorites);
+    }
 
-    return NextResponse.json({ user: responseUser });
+    return NextResponse.json({ user: responseUser }, { status: 200 });
 
   } catch (error) {
     console.error("Error in /api/auth/me:", error);

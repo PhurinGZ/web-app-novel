@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import RichTextEditor from "@/components/editor/richTextEditor/editor";
 import { Input, Button } from "@nextui-org/react";
 import useSWR from "swr";
-import MyEditor from "./editorTest/myEditor1"
+// import MyEditor from "./editorTest/myEditor1"
 
 const ChapterEditPage = () => {
   const router = useRouter();

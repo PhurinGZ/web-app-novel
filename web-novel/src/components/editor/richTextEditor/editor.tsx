@@ -2,7 +2,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { EditorState, Transaction, Plugin } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
-import { Schema, DOMParser, DOMSerializer } from "prosemirror-model";
+import {
+  Schema,
+  DOMParser,
+  DOMSerializer,
+  Fragment,
+  Node,
+  NodeSpec,
+  MarkSpec,
+} from "prosemirror-model";
 import { schema } from "prosemirror-schema-basic";
 import { addListNodes } from "prosemirror-schema-list";
 import { exampleSetup } from "prosemirror-example-setup";
@@ -25,7 +33,7 @@ import "./style.scss";
 // import styles from "./richEditor.module.css";
 
 // Schema definition remains the same as before
-const nodes = {
+const nodes: Record<string, NodeSpec> = {
   doc: {
     content: "block+",
   },
@@ -40,7 +48,7 @@ const nodes = {
     parseDOM: [
       {
         tag: "p",
-        getAttrs(dom) {
+        getAttrs(dom: HTMLElement) {
           const element = dom as HTMLElement;
           const classList = element.classList;
           return {
@@ -83,7 +91,7 @@ const nodes = {
     parseDOM: [
       {
         tag: "h1",
-        getAttrs(dom) {
+        getAttrs(dom: HTMLElement) {
           const element = dom as HTMLElement;
           const classList = element.classList;
           return {
@@ -103,7 +111,7 @@ const nodes = {
       },
       {
         tag: "h2",
-        getAttrs(dom) {
+        getAttrs(dom: HTMLElement) {
           const element = dom as HTMLElement;
           const classList = element.classList;
           return {
@@ -134,7 +142,6 @@ const nodes = {
       return [`h${node.attrs.level}`, { class: classes }, 0];
     },
   },
-
   text: {
     group: "inline",
   },
@@ -150,7 +157,7 @@ const nodes = {
     parseDOM: [
       {
         tag: "img[src]",
-        getAttrs(dom) {
+        getAttrs(dom: HTMLElement) {
           const element = dom as HTMLElement;
           return {
             src: element.getAttribute("src"),
@@ -173,7 +180,7 @@ const nodes = {
   },
 };
 
-const marks = {
+const marks: Record<string, MarkSpec> = {
   strong: {
     parseDOM: [{ tag: "strong" }, { tag: "b" }, { style: "font-weight=bold" }],
     toDOM() {
@@ -203,8 +210,10 @@ const marks = {
 const mySchema = new Schema({ nodes, marks });
 const customSerializer = DOMSerializer.fromSchema(mySchema);
 
-const serializeContent = (doc) => {
-  const fragment = customSerializer.serializeFragment(doc);
+const serializeContent = (doc: Node | Fragment) => {
+  const fragment = customSerializer.serializeFragment(
+    doc instanceof Fragment ? doc : doc.content
+  );
   const tempDiv = document.createElement("div");
   tempDiv.appendChild(fragment);
   return tempDiv.innerHTML;
@@ -293,8 +302,8 @@ const MenuBar: React.FC<{ editorView: EditorView | null }> = ({
       if (state.selection) {
         const { from } = state.selection;
         const node = state.doc.nodeAt(from);
-        if (node && node.type.attrs.indent !== undefined) {
-          indent = node.attrs.indent || 0;
+        if (node && (node as any).type.attrs.indent !== undefined) {
+          indent = (node as any).attrs.indent || 0;
         }
 
         state.doc.nodesBetween(
@@ -329,7 +338,7 @@ const MenuBar: React.FC<{ editorView: EditorView | null }> = ({
       const tr = state.tr;
 
       state.doc.nodesBetween(from, to, (node, pos) => {
-        if (node.type.attrs.align !== undefined) {
+        if (node.attrs.align !== undefined) {
           tr.setNodeMarkup(pos, null, {
             ...node.attrs,
             align: alignment,

@@ -2,7 +2,7 @@
 import dbConnect from "@/lib/dbConnect";
 import Chapter from "@/models/Chapter";
 import { NextResponse } from "next/server";
-import { isValidObjectId } from 'mongoose';
+import { isValidObjectId } from "mongoose";
 
 export async function GET(
   req: Request,
@@ -33,18 +33,20 @@ export async function GET(
   }
 }
 
-export async function PUT(req:Request, { params }) {
-  const { id } = params;
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   const { name, content } = await req.json();
   await dbConnect();
 
-  console.log("ID:", id); // Debugging: Check if ID is correct
+  console.log("ID:", params.id); // Debugging: Check if ID is correct
   console.log("Name:", name); // Debugging: Check if name is received correctly
   console.log("Content:", content); // Debugging: Check if content is received correctly
 
   try {
     const updatedChapter = await Chapter.findByIdAndUpdate(
-      id,
+      params.id,
       { name, content },
       { new: true }
     );
@@ -55,19 +57,21 @@ export async function PUT(req:Request, { params }) {
     }
 
     return NextResponse.json({ updatedChapter, status: 200 });
-  } catch (error) {
-    console.error("Error updating chapter:", error.message);
-    return NextResponse.json({ message: error.message, status: 500 });
+  } catch (error ) {
+    console.error("Error updating chapter:", error instanceof Error && error.message);
+    return NextResponse.json({ message: error instanceof Error && error.message, status: 500 });
   }
 }
 
-export async function DELETE(req:Request, { params }) {
-  const { id } = params;
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   await dbConnect();
   try {
-    await Chapter.findByIdAndDelete(id);
+    await Chapter.findByIdAndDelete(params.id);
     return NextResponse.json({ message: "Chapter deleted", status: 200 });
   } catch (error) {
-    return NextResponse.json({ message: error.message, status: 500 });
+    return NextResponse.json({ message: error instanceof Error && error.message, status: 500 });
   }
 }

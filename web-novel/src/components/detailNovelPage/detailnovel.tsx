@@ -29,7 +29,7 @@ import { useRouter } from "next/navigation";
 import Comment from "./review";
 
 interface Props {
-  id: Object;
+  _id: string;
 }
 
 interface NovelStats {
@@ -45,9 +45,10 @@ interface Chapter {
 }
 
 interface DataCardNovel {
+  status: string;
   _id: string;
   category: object;
-  chapters: object[];
+  chapters: Chapter[];
   createdAt: string;
   description: object;
   detail: string;
@@ -82,13 +83,11 @@ function DetailNovel({ _id }: Props): JSX.Element {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const fetcher = (url) => fetch(url).then((res) => res.json());
-  const { data, error, mutate } = useSWR(
-    `/api/novels/${_id}`,
-    fetcher
-  );
+  const fetcher = (url: string | URL | Request) =>
+    fetch(url).then((res) => res.json());
+  const { data, error, mutate } = useSWR(`/api/novels/${_id}`, fetcher);
 
-  console.log(data)
+  console.log(data);
 
   // Check if current user is the owner
   useEffect(() => {
@@ -199,7 +198,7 @@ function DetailNovel({ _id }: Props): JSX.Element {
   if (error) return <div>Failed to load</div>;
   if (!data) return <Loading />;
 
-  console.log(dataNovel)
+  console.log(dataNovel);
 
   return (
     <div className="min-h-screen bg-gray-50">

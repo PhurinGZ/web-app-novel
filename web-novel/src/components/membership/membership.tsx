@@ -49,7 +49,7 @@ export default function App() {
   }, [status]);
 
   // handle submit Signin
-  const handleSubmitSignin = async (e) => {
+  const handleSubmitSignin = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
     setLoading(true);
@@ -60,7 +60,7 @@ export default function App() {
       password: formDataSignin.password,
     });
 
-    if (res.ok) {
+    if (res && res.ok) {
       setLoading(false);
       router.push("/");
     }
@@ -78,8 +78,7 @@ export default function App() {
   }
 
   //handle submit Signup
-  const handleSubmitSignup = async (e) => {
-
+  const handleSubmitSignup = async (e: { preventDefault: () => void }) => {
     setLoading(true);
 
     e.preventDefault();
@@ -92,7 +91,6 @@ export default function App() {
       setLoading(false);
       setSelected("login");
     } else {
-
       setLoading(false);
 
       // Parse the response to get the message

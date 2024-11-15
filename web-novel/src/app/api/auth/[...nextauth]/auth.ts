@@ -1,8 +1,40 @@
+
+// src/app/api/auth/[...nextauth]/auth.ts
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import User from "@/models/User";
 import dbConnect from "@/lib/dbConnect";
 import bcrypt from "bcryptjs";
+import { JWT } from "next-auth/jwt";
+
+// Extend the built-in types
+declare module "next-auth" {
+  interface User {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    role: string;
+    novel_favorites: string[];
+  }
+
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      role: string;
+      novel_favorites: string[];
+    }
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    role: string;
+    novel_favorites: string[];
+  }
+}
 
 export const authOptions: AuthOptions = {
   providers: [

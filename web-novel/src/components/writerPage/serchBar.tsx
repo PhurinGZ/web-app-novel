@@ -2,7 +2,11 @@ import React from "react";
 import { Input } from "@nextui-org/react";
 import { SearchIcon } from "./SearchIcon";
 
-export default function App() {
+interface Props{
+  onSearch: (term: string) => void
+}
+
+export default function App({onSearch}:Props) {
   return (
     <Input
       label="Search"

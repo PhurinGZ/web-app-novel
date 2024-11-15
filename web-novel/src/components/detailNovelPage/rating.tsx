@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import { Star } from 'lucide-react';
+import React, { useState } from "react";
+import { Star } from "lucide-react";
 
-const StarRating = ({ totalStars = 5, initialRating = 0, onChange }) => {
+interface StarRatingProps {
+  totalStars?: number;
+  initialRating?: number;
+  onChange?: (rating: number) => void;
+}
+
+const StarRating = ({ totalStars = 5, initialRating = 0, onChange }:StarRatingProps) => {
   const [rating, setRating] = useState(initialRating);
   const [hoverRating, setHoverRating] = useState(0);
 
-  const handleClick = (selectedRating) => {
+  const handleClick = (selectedRating: number) => {
     setRating(selectedRating);
     if (onChange) {
       onChange(selectedRating);
@@ -18,7 +24,7 @@ const StarRating = ({ totalStars = 5, initialRating = 0, onChange }) => {
         {[...Array(totalStars)].map((_, index) => {
           const starValue = index + 1;
           const isHighlighted = starValue <= (hoverRating || rating);
-          
+
           return (
             <button
               key={index}
@@ -32,8 +38,8 @@ const StarRating = ({ totalStars = 5, initialRating = 0, onChange }) => {
                 size={24}
                 className={`transition-colors ${
                   isHighlighted
-                    ? 'fill-yellow-400 text-yellow-400'
-                    : 'fill-none text-gray-300'
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "fill-none text-gray-300"
                 }`}
               />
             </button>

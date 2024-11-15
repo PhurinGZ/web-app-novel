@@ -4,6 +4,29 @@ import dbConnect from "@/lib/dbConnect";
 import Category from "@/models/Category";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
+import { Types } from "mongoose";
+
+// Define interfaces that match the Mongoose document structure
+interface Novel {
+  _id: Types.ObjectId;
+  title: string;
+  titleThai: string;
+}
+
+interface CategoryDocument {
+  _id: Types.ObjectId;
+  name: string;
+  nameThai: string;
+  novels: Novel[];
+  __v: number;
+}
+
+interface Category {
+  _id: string;
+  name: string;
+  nameThai: string;
+  novels: Novel[];
+}
 
 export async function GET(
   req: Request,
@@ -18,30 +41,36 @@ export async function GET(
   await dbConnect();
 
   try {
-    const category = await Category.findById(params.id)
-      .populate('novels', 'title titleThai') // Populate novels with just the titles
-      .lean();
+    const categoryWithNovels = await Category.findById(params.id)
+      .populate<{ novels: Array<Novel> }>("novels", {
+        select: { title: 1, titleThai: 1 },
+      })
+      .lean<Category>()
+      .exec();
 
-    if (!category) {
+    if (!categoryWithNovels) {
       return NextResponse.json(
         { message: "Category not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ 
-      success: true,
-      data: {
-        id: category._id.toString(),
-        name: category.name,
-        nameThai: category.nameThai,
-        novels: category.novels.map((novel: any) => ({
-          id: novel._id.toString(),
-          title: novel.title,
-          titleThai: novel.titleThai
-        }))
-      }
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          id: categoryWithNovels._id.toString(),
+          name: categoryWithNovels.name,
+          nameThai: categoryWithNovels.nameThai,
+          novels: categoryWithNovels.novels.map((novel) => ({
+            id: novel._id.toString(),
+            title: novel.title,
+            titleThai: novel.titleThai,
+          })),
+        },
+      },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       { message: "Error fetching category" },
@@ -50,7 +79,6 @@ export async function GET(
   }
 }
 
-// Add/Remove novels from category
 export async function PATCH(
   req: Request,
   { params }: { params: { id: string } }
@@ -65,7 +93,10 @@ export async function PATCH(
 
   try {
     const body = await req.json();
-    const { action, novelId } = body;
+    const { action, novelId } = body as {
+      action: "add" | "remove";
+      novelId: string;
+    };
 
     if (!novelId || !action) {
       return NextResponse.json(
@@ -75,9 +106,9 @@ export async function PATCH(
     }
 
     let updateOperation;
-    if (action === 'add') {
+    if (action === "add") {
       updateOperation = { $addToSet: { novels: novelId } };
-    } else if (action === 'remove') {
+    } else if (action === "remove") {
       updateOperation = { $pull: { novels: novelId } };
     } else {
       return NextResponse.json(
@@ -91,10 +122,13 @@ export async function PATCH(
       {
         ...updateOperation,
         updatedBy: session.user.id,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       { new: true }
-    ).populate('novels', 'title titleThai');
+    )
+      .populate<{ novels: Novel[] }>("novels", "title titleThai")
+      .lean<Category>()
+      .exec();
 
     if (!updatedCategory) {
       return NextResponse.json(
@@ -103,19 +137,22 @@ export async function PATCH(
       );
     }
 
-    return NextResponse.json({ 
-      success: true,
-      data: {
-        id: updatedCategory._id.toString(),
-        name: updatedCategory.name,
-        nameThai: updatedCategory.nameThai,
-        novels: updatedCategory.novels.map((novel: any) => ({
-          id: novel._id.toString(),
-          title: novel.title,
-          titleThai: novel.titleThai
-        }))
-      }
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          id: updatedCategory._id.toString(),
+          name: updatedCategory.name,
+          nameThai: updatedCategory.nameThai,
+          novels: updatedCategory.novels.map((novel) => ({
+            id: (novel._id as Types.ObjectId).toString(),
+            title: novel.title,
+            titleThai: novel.titleThai,
+          })),
+        },
+      },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       { message: "Error updating category novels" },

@@ -36,6 +36,7 @@ interface Rate {
 }
 
 interface Category {
+  id: string | number;
   _id: string;
   name: string;
   nameThai: string;
@@ -62,7 +63,7 @@ export default function EditNovel({ id }: { id: string }): JSX.Element {
 
         const ratesData = await ratesResponse.json();
         const categoriesData = await categoriesResponse.json();
-        console.log(categoriesData)
+        console.log(categoriesData);
         setRates(ratesData.rates || []);
         setCategories(categoriesData.data || []);
       } catch (error) {
@@ -74,7 +75,7 @@ export default function EditNovel({ id }: { id: string }): JSX.Element {
     fetchData();
   }, []);
 
-  console.log(categories)
+  console.log(categories);
 
   // For EditNovel, update the useEffect that fetches novel data:
   useEffect(() => {
@@ -165,7 +166,6 @@ export default function EditNovel({ id }: { id: string }): JSX.Element {
   if (status === "loading") return <div>Loading...</div>;
   if (status === "unauthenticated") {
     router.push("/login");
-    return null;
   }
 
   // console.log(novelData);
