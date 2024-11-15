@@ -42,7 +42,7 @@ export async function GET(
     return NextResponse.json({ novel }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { message: `Error fetching novel: ${error.message}` },
+      { message: `Error fetching novel: ${error instanceof Error && error.message}` },
       { status: 500 }
     );
   }

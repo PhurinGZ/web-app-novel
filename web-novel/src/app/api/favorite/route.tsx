@@ -60,10 +60,10 @@ export async function POST(req: Request) {
       if (isLiked) {
         // Remove like
         user.liked_novels = user.liked_novels.filter(
-          (id) => id.toString() !== novelId.toString()
+          (id: { toString: () => string; }) => id.toString() !== novelId.toString()
         );
         novel.likes = novel.likes.filter(
-          (id) => id.toString() !== userId.toString()
+          (id: { toString: () => string; }) => id.toString() !== userId.toString()
         );
       } else {
         // Add like
@@ -78,10 +78,10 @@ export async function POST(req: Request) {
       if (isBookmarked) {
         // Remove from bookshelf
         user.novel_favorites = user.novel_favorites.filter(
-          (id) => id.toString() !== novelId.toString()
+          (id: { toString: () => any; }) => id.toString() !== novelId.toString()
         );
         novel.bookshelf = novel.bookshelf.filter(
-          (id) => id.toString() !== userId.toString()
+          (id: { toString: () => string; }) => id.toString() !== userId.toString()
         );
       } else {
         // Add to bookshelf

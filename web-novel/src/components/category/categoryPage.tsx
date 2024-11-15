@@ -8,10 +8,34 @@ import Image from "next/image";
 import NotFound404 from "../notFound/404NotFound";
 import { Link } from "@nextui-org/react";
 
-function CategoryPage({ name }) {
-  const [data, setData] = useState();
+interface Novel {
+  _id: string;
+  name: string;
+  image?: string;
+  rate?: {
+    name: string;
+  };
+}
 
-  const fetcher = (url) => fetch(url).then((res) => res.json());
+interface CategoryData {
+  name: string
+  novels: any;
+  success: boolean;
+  data: {
+    name: string;
+    novels: Novel[];
+  };
+}
+
+interface Props {
+  name: string;
+}
+
+function CategoryPage({ name }: Props) {
+  const [data, setData] = useState<CategoryData>();
+
+  const fetcher = (url: string | URL | Request) =>
+    fetch(url).then((res) => res.json());
 
   const { data: category, error: categoryError } = useSWR(
     `/api/categories/get-name/${name}`,
@@ -30,7 +54,6 @@ function CategoryPage({ name }) {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <main className="flex-grow container mx-auto px-6 py-8 flex flex-col lg:flex-row gap-8">
-        {/* Main Content */}
         <div className="flex-grow">
           <h1 className="text-3xl font-bold text-center mb-6 text-indigo-600">
             หมวดหมู่: {data?.name}
@@ -38,13 +61,12 @@ function CategoryPage({ name }) {
 
           {data && data.novels && data.novels.length > 0 ? (
             <div className="space-y-6">
-              {data.novels.map((novel) => (
+              {data.novels.map((novel: { _id: React.Key | null | undefined; image: any; name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; rate: { name: any; }; }) => (
                 <Link
                   key={novel._id}
                   href={`/book/${novel._id}`}
                   className="flex items-center p-4 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow duration-200"
                 >
-                  {/* Assuming each novel has an image URL */}
                   <Image
                     src={novel.image || "/image/imageBook1.png"}
                     width={100}
@@ -70,11 +92,9 @@ function CategoryPage({ name }) {
           )}
         </div>
 
-        {/* Filter Sidebar (for future use) */}
         <aside className="w-full lg:w-1/4 bg-white p-6 shadow-md rounded-lg">
           <h2 className="text-lg font-semibold text-gray-700 mb-4">ตัวกรอง</h2>
           <div className="space-y-4">
-            {/* Placeholder for future sorting/filter options */}
             <div>
               <label className="block text-gray-600">จัดเรียงตาม</label>
               <select className="w-full mt-1 p-2 border rounded-md">

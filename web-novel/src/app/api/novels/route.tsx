@@ -6,6 +6,15 @@ import Rate from "@/models/Rate";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { Types } from "mongoose";
+import { Error as MongooseError } from "mongoose";
+
+interface ValidationError extends Error {
+  errors: {
+    [key: string]: {
+      message: string;
+    };
+  };
+}
 
 // Define valid types and statuses
 const VALID_TYPES = ["novel", "webtoon"];
@@ -25,7 +34,7 @@ export async function GET() {
       .populate("createdBy")
       .populate("rate")
       .populate("category")
-      .populate('bookshelf')
+      .populate("bookshelf")
       // .populate('chapters')
       .sort({ createdAt: -1 });
     return NextResponse.json({ novels }, { status: 200 });
@@ -133,10 +142,11 @@ export async function POST(req: Request) {
     console.error("Create novel error:", error);
 
     // Handle Mongoose validation errors
-    if (error.name === "ValidationError") {
-      const validationErrors = Object.keys(error.errors).reduce(
+    if (error instanceof Error && error.name === "ValidationError") {
+      const validationError = error as ValidationError;
+      const validationErrors = Object.keys(validationError.errors).reduce(
         (acc: { [key: string]: string }, key: string) => {
-          acc[key] = error.errors[key].message;
+          acc[key] = validationError.errors[key].message;
           return acc;
         },
         {}

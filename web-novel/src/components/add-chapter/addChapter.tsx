@@ -50,7 +50,7 @@ const AddChapterPage = ({ id }: props) => {
       router.push(`/book/${id}`);
     } catch (error) {
       console.error("Error creating chapter:", error);
-      alert(error.message || "Failed to create chapter. Please try again.");
+      alert(error instanceof Error && error.message || "Failed to create chapter. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

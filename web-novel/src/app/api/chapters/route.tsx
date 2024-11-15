@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error in POST /api/chapters:", error);
     return NextResponse.json({ 
-      message: error.message || "Internal server error",
+      message: error instanceof Error && error.message || "Internal server error",
       status: 500 
     });
   }
@@ -103,7 +103,7 @@ export async function PUT(req: Request) {
   } catch (error) {
     console.error("Error in PUT /api/chapters:", error);
     return NextResponse.json({ 
-      message: error.message || "Internal server error",
+      message: error instanceof Error && error.message || "Internal server error",
       status: 500 
     });
   }
@@ -161,7 +161,7 @@ export async function DELETE(req: Request) {
   } catch (error) {
     console.error("Error in DELETE /api/chapters:", error);
     return NextResponse.json({ 
-      message: error.message || "Internal server error",
+      message: error instanceof Error && error.message || "Internal server error",
       status: 500 
     });
   }

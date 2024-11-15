@@ -7,21 +7,39 @@ import Loading from "@/components/loading/loading";
 import Comments from "@/components/readNovel/comments/comments";
 import EditChapterButton from "./editChapterButton";
 import Dropdown from "./dropdown";
-import { processNovelContent } from "./contentProcessor";
+// import { processNovelContent } from "./contentProcessor";
 import "./style.scss";
 
-const ReadNovel = ({ _id }) => {
-  const [dataNovel, setDataNovel] = useState(null);
-  const [name, setName] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
+interface Props {
+  _id: string;
+}
 
-  const fetcher = (url) => fetch(url).then((res) => res.json());
-  const { data, error } = useSWR(
-    `/api/chapters/${_id}`,
-    fetcher
-  );
+interface CurrentUser {
+  user: {
+    id: string;
+  };
+}
 
-  console.log(dataNovel)
+interface DataNovel {
+  _id: string;
+  name: string;
+  novel: {
+    _id: string;
+    createdBy: string;
+  };
+  content: string | TrustedHTML;
+}
+
+const ReadNovel = ({ _id }: Props) => {
+  const [dataNovel, setDataNovel] = useState<DataNovel>();
+  // const [name, setName] = useState(null);
+  const [currentUser, setCurrentUser] = useState<CurrentUser>();
+
+  const fetcher = (url: string | URL | Request) =>
+    fetch(url).then((res) => res.json());
+  const { data, error } = useSWR(`/api/chapters/${_id}`, fetcher);
+
+  console.log(dataNovel);
   // console.log(data)
   const {
     data: comments,
@@ -33,11 +51,11 @@ const ReadNovel = ({ _id }) => {
   useEffect(() => {
     if (data) {
       setDataNovel(data);
-      setName(data.name);
+      // setName(data.name);
     }
   }, [data]);
 
-  console.log(dataNovel?.content);
+  // console.log(dataNovel?.content);
 
   useEffect(() => {
     if (userData) {
@@ -45,7 +63,7 @@ const ReadNovel = ({ _id }) => {
     }
   }, [userData]);
 
-  const handleNewComment = async (text) => {
+  const handleNewComment = async (text: any) => {
     try {
       const response = await fetch(`/api/comments/${_id}`, {
         method: "POST",
@@ -66,13 +84,15 @@ const ReadNovel = ({ _id }) => {
     }
   };
 
-  const processedComments = comments?.map((comment) => ({
-    ...comment,
-    user: {
-      ...comment.user,
-      isAuthor: comment.user?._id === dataNovel?.novel?.createdBy,
-    },
-  }));
+  const processedComments = comments?.map(
+    (comment: { user: { _id: any } }) => ({
+      ...comment,
+      user: {
+        ...comment.user,
+        isAuthor: comment.user?._id === dataNovel?.novel?.createdBy,
+      },
+    })
+  );
 
   if (error) {
     return (
@@ -99,7 +119,7 @@ const ReadNovel = ({ _id }) => {
           <div className="sticky top-0 z-50 bg-white border-b shadow-sm">
             <div className="container mx-auto px-4 py-3">
               <div className="max-w-4xl mx-auto">
-                {name && dataNovel.novel && (
+                {dataNovel && dataNovel.novel && (
                   <div className="flex flex-col md:flex-row items-center gap-4">
                     <div className="flex-1 min-w-0">
                       <Dropdown
@@ -116,6 +136,7 @@ const ReadNovel = ({ _id }) => {
                     />
                   </div>
                 )}
+                z
               </div>
             </div>
           </div>
@@ -129,7 +150,9 @@ const ReadNovel = ({ _id }) => {
                   </h1>
                   <div
                     className="prose prose-neutral max-w-full break-words overflow-hidden whitespace-pre-wrap editor-content"
-                    dangerouslySetInnerHTML={{ __html: dataNovel?.content }}
+                    dangerouslySetInnerHTML={{
+                      __html: dataNovel?.content ?? "",
+                    }}
                   />
                 </div>
               </div>

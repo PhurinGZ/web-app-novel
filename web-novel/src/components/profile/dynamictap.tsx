@@ -12,9 +12,15 @@ interface TabItem {
   content: string;
 }
 
+interface DataNovel {
+  user: {
+    novel_favorites: [];
+  };
+}
+
 const App: React.FC = () => {
   const { data: session, status } = useSession();
-  const [dataNovel, setDataNovel] = useState();
+  const [dataNovel, setDataNovel] = useState<DataNovel>();
 
   if (status === "loading") return <Loading />;
   // if (error) return <div>{error.message}</div>;
@@ -50,15 +56,22 @@ const App: React.FC = () => {
       <Tabs aria-label="Dynamic tabs">
         <Tab title="Favorite">
           {dataNovel?.user?.novel_favorites?.length ? (
-            dataNovel.user.novel_favorites.map((fav) => (
-              <Favorite
-                key={fav.id}
-                title={fav.name}
-                description={fav.detail}
-                imageUrl={null}
-                id={fav._id}
-              />
-            ))
+            dataNovel.user.novel_favorites.map(
+              (fav: {
+                id: React.Key | null | undefined;
+                name: any;
+                detail: any;
+                _id: any;
+              }) => (
+                <Favorite
+                  key={fav.id}
+                  title={fav.name}
+                  description={fav.detail}
+                  imageUrl={"URL"}
+                  id={fav._id}
+                />
+              )
+            )
           ) : (
             <div>ไม่มีนิยายที่ชอบ</div>
           )}

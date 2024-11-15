@@ -1,10 +1,13 @@
-// components/Category.tsx
+import  useSWR  from "swr";
+import Skeleton from "./skeleton";
+import { Key } from "react";
 
-import useSWR from "swr";
-import Skeleton from "./skeleton"
+interface CategoryProps {
+  onClose: () => void;
+}
 
-const Category = () => {
-  const fetcher = (url) => fetch(url).then((res) => res.json());
+const Category: React.FC<CategoryProps> = ({ onClose }) => {
+  const fetcher = (url: string | URL | Request) => fetch(url).then((res) => res.json());
 
   const { data: category, error: categoryError, isLoading } = useSWR(
     `/api/categories`,
@@ -30,7 +33,7 @@ const Category = () => {
                   <Skeleton className="w-full h-6" />
                 </div>
               ))
-            : category?.data?.map((c) => (
+            : category?.data?.map((c: { id: Key | null | undefined; name: string }) => (
                 <a
                   key={c.id}
                   href={`/category/${c.name}`}
@@ -42,6 +45,9 @@ const Category = () => {
               ))}
         </div>
       </div>
+      <button onClick={onClose} className="absolute top-0 right-0 m-4 p-2 bg-red-500 text-white rounded">
+        Close
+      </button>
     </div>
   );
 };

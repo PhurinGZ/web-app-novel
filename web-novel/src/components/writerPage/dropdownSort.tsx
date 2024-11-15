@@ -1,7 +1,11 @@
 import React from "react";
 import { Select, SelectItem } from "@nextui-org/react";
 
-export default function App() {
+interface Props {
+  onSort: (sortOption: string) => void;
+}
+
+export default function App({ onSort }: Props) {
   return (
     <Select
       label="เรียงลำดับ"
@@ -9,7 +13,6 @@ export default function App() {
       startContent={""}
       defaultSelectedKeys={["อัปเดตล่าสุด"]}
       // className="max-w-xs"
-      
     >
       <SelectItem key="อัปเดตล่าสุด">อัปเดตล่าสุด</SelectItem>
       <SelectItem key="ยอดนิยม">ยอดนิยม</SelectItem>

@@ -18,37 +18,67 @@ interface ArrowProps {
 interface Novel {
   id: number;
   title: string;
-  category: string;
-  rate: number; // Change type to number
-  author: string;
+  category: {};
+  rate: any; // Change type to number
+  author: any;
+}
+
+interface Category {
+  _id: string;
+  name: string;
+  novels: string[];
+  nameThai: string;
+  createdAt: string;
+}
+
+interface CreatedBy {
+  _id: string;
+  username: string;
+  email: string;
+  password: string;
+  role: string;
+  // Add other fields that may be relevant (e.g., createdAt, updatedAt, etc.)
+}
+
+interface Rate {
+  _id: string;
+  name: string;
+  novels: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Props {
   dataCardNovel: {
-    id: number;
-    name: string;
-    desc: string;
-    category: {
-      name: String;
-    };
-    rate: {
-      name: String;
-    };
-    rating: number[];
+    map: any;
+    averageRating: number;
+    bookshelf: string[];
+    category: Category;
+    chapters: string[];
+    createdAt: string;
+    createdBy: CreatedBy;
     detail: string;
-    tag: string;
-    chapter: {
-      id: number;
-      name: string;
-      content: string;
-    }[];
-    createdBy: {
-      username: String;
-    };
-    public: boolean;
-    updateAt: string;
-    createAt: string;
-  }[];
+    likes: string[];
+    name: string;
+    publishedAt: string;
+    rate: Rate;
+    reviews: string[];
+    status: string;
+    tags: string[];
+    type: string;
+    updatedAt: string;
+    viewCount: number;
+    __v: number;
+    _id: string;
+  };
+}
+
+interface Item {
+  id: number;
+  title: string;
+  category: string;
+  rate: number;
+  author: string;
 }
 
 interface CardProps extends Novel {
@@ -57,15 +87,23 @@ interface CardProps extends Novel {
   itemId: number; // Add itemId to the props interface
 }
 
-function SliderBook({ dataCardNovel }: Props) {
-  const items = dataCardNovel.map((novel) => ({
-    id: novel._id,
+function SliderBook({ dataCardNovel }: any) {
+  const items: Item[] = dataCardNovel.map(
+    (novel: {
+      _id: string;
+      name: string;
+      category: { name: string };
+      rate: { name: string };
+      createdBy: { username: string };
+    }) => ({
+      id: novel._id,
 
-    title: novel.name, // Change to novel.title
-    category: novel?.category?.name,
-    rate: novel?.rate?.name, // Convert rate to number
-    author: novel?.createdBy?.username,
-  }));
+      title: novel.name, // Change to novel.title
+      category: novel?.category?.name,
+      rate: novel?.rate?.name, // Convert rate to number
+      author: novel?.createdBy?.username,
+    })
+  );
 
   console.log(dataCardNovel);
 

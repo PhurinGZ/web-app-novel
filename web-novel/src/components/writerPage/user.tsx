@@ -19,9 +19,9 @@ export default function App() {
         src: "https://avatars.githubusercontent.com/u/120617446?s=400&u=7bdedc5d7cdaf5d837f8ba624999801cb7200ccc&v=4 "
       }}
       className="flex items-center space-x-4"
-      nameClassName="text-xl font-bold text-gray-800"
-      descriptionClassName="text-gray-500"
-      descriptionWrapperClassName="mt-1"
+      // nameClassName="text-xl font-bold text-gray-800"
+      // descriptionClassName="text-gray-500"
+      // descriptionWrapperClassName="mt-1"
     />
   );
 }

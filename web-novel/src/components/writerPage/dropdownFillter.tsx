@@ -1,7 +1,11 @@
 import React from "react";
 import { Select, SelectItem } from "@nextui-org/react";
 
-export default function App() {
+interface Props {
+  onFilter: (filterOption: string) => void;
+}
+
+export default function App({ onFilter }: Props) {
   return (
     <Select
       label="Fillter"

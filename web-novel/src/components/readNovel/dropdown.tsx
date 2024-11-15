@@ -1,19 +1,22 @@
-import React from 'react';
-import { useRouter } from 'next/navigation';
+import React from "react";
+import { useRouter } from "next/navigation";
 import { Select, SelectItem, Button } from "@nextui-org/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import useSWR from "swr";
 
-const Dropdown = ({ novelId, id }) => {
+interface Props {
+  novelId: string;
+  id: string;
+}
+
+const Dropdown = ({ novelId, id }: Props) => {
   const router = useRouter();
   const [selectedChapterId, setSelectedChapterId] = React.useState(id);
   const [chapters, setChapters] = React.useState([]);
-  
-  const fetcher = (url) => fetch(url).then((res) => res.json());
-  const { data, error } = useSWR(
-    `/api/novels/${novelId}`,
-    fetcher
-  );
+
+  const fetcher = (url: string | URL | Request) =>
+    fetch(url).then((res) => res.json());
+  const { data, error } = useSWR(`/api/novels/${novelId}`, fetcher);
 
   // console.log(data.novel.chapters)
 
@@ -24,18 +27,18 @@ const Dropdown = ({ novelId, id }) => {
   }, [data]);
 
   const currentIndex = chapters.findIndex(
-    (chapter) => chapter._id === selectedChapterId
+    (chapter: { _id: any }) => chapter._id === selectedChapterId
   );
 
-  const handleChapterChange = (value) => {
+  const handleChapterChange = (value: React.SetStateAction<string>) => {
     setSelectedChapterId(value);
     router.push(`/chapter/${value}`);
   };
 
-  const handleNavigation = (direction) => {
-    const newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+  const handleNavigation = (direction: string) => {
+    const newIndex = direction === "next" ? currentIndex + 1 : currentIndex - 1;
     if (newIndex >= 0 && newIndex < chapters.length) {
-      const targetChapter = chapters[newIndex];
+      const targetChapter: { _id: any } = chapters[newIndex];
       setSelectedChapterId(targetChapter._id);
       router.push(`/chapter/${targetChapter._id}`);
     }
@@ -62,9 +65,9 @@ const Dropdown = ({ novelId, id }) => {
           size="sm"
           variant="bordered"
         >
-          {chapters.map((chapter) => (
-            <SelectItem 
-              key={chapter._id} 
+          {chapters.map((chapter: { _id: string; name: string }) => (
+            <SelectItem
+              key={chapter._id}
               value={chapter._id}
               className="py-2 px-3"
             >
@@ -73,12 +76,12 @@ const Dropdown = ({ novelId, id }) => {
           ))}
         </Select>
       </div>
-      
+
       <div className="flex items-center gap-2">
         <Button
           variant="bordered"
           size="sm"
-          onClick={() => handleNavigation('prev')}
+          onClick={() => handleNavigation("prev")}
           isDisabled={currentIndex <= 0}
           className="min-w-[100px]"
           startContent={<ChevronLeft className="w-4 h-4" />}
@@ -88,7 +91,7 @@ const Dropdown = ({ novelId, id }) => {
         <Button
           variant="bordered"
           size="sm"
-          onClick={() => handleNavigation('next')}
+          onClick={() => handleNavigation("next")}
           isDisabled={currentIndex >= chapters.length - 1}
           className="min-w-[100px]"
           endContent={<ChevronRight className="w-4 h-4" />}

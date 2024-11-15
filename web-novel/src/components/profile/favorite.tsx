@@ -2,7 +2,14 @@ import React from "react";
 import { Link } from "@nextui-org/react";
 import Image from "next/image";
 
-function Favorite({ title, description, imageUrl, id }) {
+interface Props {
+  title: string;
+  description: string;
+  imageUrl: string;
+  id: string;
+}
+
+function Favorite({ title, description, imageUrl, id }: Props) {
   return (
     <Link
       href={`/book/${id}`}

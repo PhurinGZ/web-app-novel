@@ -5,7 +5,7 @@ import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 
 interface Props {
-  id: number;
+  id: string;
   image: string;
   name: string;
   updateDate: string;
