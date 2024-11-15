@@ -6,6 +6,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/auth";
 import { NextResponse } from "next/server";
 
+// Mark route as dynamic
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   await dbConnect();
 
