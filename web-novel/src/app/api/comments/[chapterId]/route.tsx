@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/dbConnect";
 import Comment from "@/models/Comment";
 import { getServerSession } from "next-auth/next";
-import { authOption } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
@@ -27,7 +27,7 @@ export async function POST(req, { params }) {
   const { text } = await req.json();
 
   // Get the authenticated user session
-  const session = await getServerSession(authOption);
+  const session = await getServerSession(authOptions);
 
   if (!session) {
     return NextResponse.json({ message: "You must be logged in to post a comment." }, { status: 401 });

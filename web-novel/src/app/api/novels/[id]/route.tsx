@@ -5,7 +5,7 @@ import Novel from "@/models/Novel";
 import Category from "@/models/Category";
 import Rate from "@/models/Rate";
 import { getServerSession } from "next-auth";
-import { authOption } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { Types } from "mongoose";
 import Chapter from "@/models/Chapter";
 import Review from "@/models/Review";
@@ -18,7 +18,7 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOption);
+  const session = await getServerSession(authOptions);
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -52,7 +52,7 @@ export async function PUT(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const userSession = await getServerSession(authOption); // Renamed to userSession
+  const userSession = await getServerSession(authOptions); // Renamed to userSession
 
   if (!userSession) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -195,7 +195,7 @@ export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOption);
+  const session = await getServerSession(authOptions);
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

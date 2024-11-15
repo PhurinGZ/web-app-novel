@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth/next";
-import { authOption } from "../[...nextauth]/route";
+import { authOptions } from "../[...nextauth]/auth";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import Novel from "@/models/Novel";
@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOption);
+    const session = await getServerSession(authOptions);
 
     if (!session) {
       return NextResponse.json(

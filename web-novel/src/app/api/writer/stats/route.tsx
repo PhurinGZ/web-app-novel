@@ -3,12 +3,12 @@
 import dbConnect from "@/lib/dbConnect";
 import Novel from "@/models/Novel";
 import { getServerSession } from "next-auth/next";
-import { authOption } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOption);
+    const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ message: "Unauthorized", status: 401 });
     }
