@@ -4,7 +4,7 @@ import Novel from "@/models/Novel";
 import Review from "@/models/Review";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOption } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import mongoose from "mongoose";
 
 // Helper function to calculate average rating
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const session = await getServerSession(authOption);
+  const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json(
       { message: "Authentication required." },
@@ -211,7 +211,7 @@ export async function PUT(req: Request) {
         );
       }
 
-      const session = await getServerSession(authOption);
+      const session = await getServerSession(authOptions);
       if (!session) {
         return NextResponse.json(
           { message: "Authentication required." },

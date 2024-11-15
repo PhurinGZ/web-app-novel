@@ -3,13 +3,13 @@ import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import Novel from "@/models/Novel";
 import { getServerSession } from "next-auth/next";
-import { authOption } from "../auth/[...nextauth]/route";
+import { authOptions } from "../auth/[...nextauth]/auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   await dbConnect();
 
-  const session = await getServerSession(authOption);
+  const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json(
       { message: "Authentication required" },
@@ -116,7 +116,7 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   await dbConnect();
 
-  const session = await getServerSession(authOption);
+  const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json(
       { message: "Authentication required" },
