@@ -3,10 +3,7 @@ import dbConnect from "@/lib/dbConnect";
 import Novel from "@/models/Novel";
 import Category from "@/models/Category";
 import Rate from "@/models/Rate";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { Types } from "mongoose";
-import { Error as MongooseError } from "mongoose";
 
 interface ValidationError extends Error {
   errors: {
@@ -21,11 +18,6 @@ const VALID_TYPES = ["novel", "webtoon"];
 const VALID_STATUSES = ["ongoing", "completed", "dropped"];
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
 
   await dbConnect();
 
@@ -48,11 +40,6 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
 
   await dbConnect();
 
