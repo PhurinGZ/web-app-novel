@@ -1,0 +1,27 @@
+// ReadNovel.scss
+/* editor-content.css */
+.paragraph,
+.heading {
+  margin-bottom: 1em;
+}
+
+.text-left {
+  text-align: left;
+}
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+
+.indent-1 {
+  margin-left: 20px;
+}
+.indent-2 {
+  margin-left: 40px;
+}
+
+.text-indent {
+  text-indent: 40px;
+}
