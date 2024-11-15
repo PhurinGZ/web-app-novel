@@ -37,7 +37,7 @@ function HomePage() {
     return <div>Failed to load, Error : {listNovelsError.message}</div>;
   if (!listNovelsData) return <Loading />;
 
-  console.log(dataNovel);
+  // console.log(dataNovel);
 
   return (
     <>
