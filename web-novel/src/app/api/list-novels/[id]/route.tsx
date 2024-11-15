@@ -1,7 +1,7 @@
 // app/api/list-novels/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import ListNovel from "@/models/ListNovel";
+import ListNovel from "@/models/listNovel";
 import { isValidObjectId } from "mongoose";
 
 export async function GET(

@@ -1,7 +1,7 @@
 // app/api/list-novels/route.ts
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
-import ListNovel from '@/models/ListNovel';
+import ListNovel from '@/models/listNovel';
 
 
 export async function GET() {
