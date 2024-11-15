@@ -14,7 +14,7 @@ function CategoryPage({ name }) {
   const fetcher = (url) => fetch(url).then((res) => res.json());
 
   const { data: category, error: categoryError } = useSWR(
-    `/api/categories/${name}`,
+    `/api/categories/get-name/${name}`,
     fetcher
   );
 

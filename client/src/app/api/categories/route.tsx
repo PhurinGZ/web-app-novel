@@ -5,11 +5,11 @@ import { getServerSession } from "next-auth";
 import { authOption } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET() {
-  const session = await getServerSession(authOption);
+  // const session = await getServerSession(authOption);
 
-  if (!session) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
+  // if (!session) {
+  //   return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  // }
 
   await dbConnect();
 
