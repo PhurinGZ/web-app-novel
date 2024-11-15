@@ -1,3 +1,4 @@
+//profile.tsx
 "use client";
 import React, { useEffect } from "react";
 import { Avatar, Link } from "@nextui-org/react";
@@ -38,7 +39,7 @@ function Profile() {
               <div className="md:flex p-8">
                 <div className="md:flex-shrink-0">
                   <Avatar
-                    src="https://raw.githubusercontent.com/PhurinGZ/web-app-novel/refs/heads/new_feature/client/public/image/testProfile.jpg"
+                    src="https://raw.githubusercontent.com/PhurinGZ/web-app-novel/refs/heads/main/web-novel/public/image/testProfile.jpg"
                     className="w-40 h-40 md:w-36 md:h-36"
                   />
                 </div>
