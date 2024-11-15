@@ -7,6 +7,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import mongoose from "mongoose";
 
+// Mark route as dynamic
+export const dynamic = 'force-dynamic';
+
 // Helper function to calculate average rating
 async function calculateAverageRating(novelId: string) {
   const novel = await Novel.findById(novelId).populate("reviews");

@@ -4,6 +4,9 @@ import Category from "@/models/Category";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 
+// Mark route as dynamic
+export const dynamic = 'force-dynamic';
+
 interface Category {
   [x: string]: any;
   _id: string;

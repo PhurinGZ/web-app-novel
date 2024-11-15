@@ -10,6 +10,9 @@ import { Types } from "mongoose";
 import Chapter from "@/models/Chapter";
 import Review from "@/models/Review";
 
+// Mark route as dynamic
+export const dynamic = 'force-dynamic';
+
 // Define valid types and statuses
 const VALID_TYPES = ["novel", "webtoon"];
 const VALID_STATUSES = ["ongoing", "completed", "dropped"];

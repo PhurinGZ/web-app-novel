@@ -6,6 +6,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { Types } from "mongoose";
 
+// Mark route as dynamic
+export const dynamic = 'force-dynamic';
+
 // Define interfaces that match the Mongoose document structure
 interface Novel {
   _id: Types.ObjectId;
