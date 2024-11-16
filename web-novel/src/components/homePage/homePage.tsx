@@ -16,14 +16,19 @@ function HomePage() {
   const fetcher = (url: string | Request | URL) =>
     fetch(url).then((res) => res.json());
 
-  const { data: novelData, error: novelError } = useSWR("/api/novels", fetcher);
+  const {
+    data: novelData,
+    error: novelError,
+    isLoading: isLoadingNovelData,
+  } = useSWR("/api/novels", fetcher);
 
   // console.log(novelData)
 
-  const { data: listNovelsData, error: listNovelsError } = useSWR(
-    "/api/list-novels",
-    fetcher
-  );
+  const {
+    data: listNovelsData,
+    error: listNovelsError,
+    isLoading,
+  } = useSWR("/api/list-novels", fetcher);
   // console.log(novelData);
 
   useEffect(() => {
@@ -37,8 +42,8 @@ function HomePage() {
     return <div>Failed to load, Error : {listNovelsError.message}</div>;
 
   // if (!session) return <Loading />;
-  // if (!listNovelsData) return <Loading />;
-  // if (!novelData) return <Loading />;
+  if (!isLoading) return <Loading />;
+  if (!isLoadingNovelData) return <Loading />;
 
   console.log(listNovelsData);
 
