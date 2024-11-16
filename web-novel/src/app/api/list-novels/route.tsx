@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import ListNovel from "@/models/listNovel";
 import Novel from "@/models/Novel";
+import Rate from "@/models/Rate";
+import Category from "@/models/Category";
 
 // Mark route as dynamic
 export const dynamic = "force-dynamic";
@@ -21,10 +23,12 @@ export async function GET() {
         {
           path: "rate",
           select: "name",
+          model: Rate,
         },
         {
           path: "category",
           select: "name",
+          model: Category,
         },
       ],
     });
