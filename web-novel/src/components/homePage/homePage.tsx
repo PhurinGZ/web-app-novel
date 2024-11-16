@@ -53,7 +53,7 @@ function HomePage() {
             <Searchbar />
           </div> */}
           <div className="content-home">
-            {listNovelsData?.map(
+            {/* {listNovelsData?.map(
               (
                 l: {
                   nameListTH:
@@ -94,7 +94,7 @@ function HomePage() {
                   </div>
                 </div>
               )
-            )}
+            )} */}
 
             <div className="content">
               <h1 className="text-3xl font-bold mb-4">นิยายทั้งหมด</h1>
