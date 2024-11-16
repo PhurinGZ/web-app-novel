@@ -5,6 +5,7 @@ import ListNovel from "@/models/listNovel";
 import Novel from "@/models/Novel";
 import Rate from "@/models/Rate";
 import Category from "@/models/Category";
+import User from "@/models/User";
 
 // Mark route as dynamic
 export const dynamic = "force-dynamic";
@@ -19,6 +20,7 @@ export async function GET() {
         {
           path: "createdBy",
           select: "username",
+          model: User,
         },
         {
           path: "rate",
