@@ -10,7 +10,24 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   await dbConnect();
   try {
-    const listNovels = await ListNovel.find().populate("novels",null,Novel);
+    const listNovels = await ListNovel.find().populate({
+      path: "novels",
+      model: Novel,
+      populate: [
+        {
+          path: "createdBy",
+          select: "username",
+        },
+        {
+          path: "rate",
+          select: "name",
+        },
+        {
+          path: "category",
+          select: "name",
+        },
+      ],
+    });
 
     return NextResponse.json(listNovels);
   } catch (error: any) {
