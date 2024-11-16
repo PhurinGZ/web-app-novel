@@ -5,14 +5,14 @@ import ListNovel from "@/models/listNovel";
 import { isValidObjectId } from "mongoose";
 
 // Mark route as dynamic
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
+  await dbConnect();
   try {
-    await dbConnect();
     const { id } = params;
 
     if (!isValidObjectId(id)) {
@@ -41,8 +41,8 @@ export async function PUT(
   req: Request,
   { params }: { params: { id: string } }
 ) {
+  await dbConnect();
   try {
-    await dbConnect();
     const { id } = params;
     const { nameListEN, nameListTH, novels, updatedBy, publishedAt } =
       await req.json();
@@ -78,8 +78,8 @@ export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
 ) {
+  await dbConnect();
   try {
-    await dbConnect();
     const { id } = params;
 
     if (!isValidObjectId(id)) {
