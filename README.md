@@ -36,12 +36,20 @@ web-novel/
    cd web-app-novel  
    ```  
 
-2. Install dependencies:  
+2. Create a `.env` file in the project root and add the following environment variables:  
+   ```bash  
+   NEXTAUTH_URL=http://localhost:3000 # Replace with your production URL if deploying  
+   SALT=10                           # Adjust salt value for password hashing if needed  
+   NEXTAUTH_SECRET=Web-novel         # Replace with your secret  
+   MongodbURL=mongodb+srv://<username>:<password>@cluster.mongodb.net/<dbname>  
+   ```  
+
+3. Install dependencies:  
    ```bash  
    npm install  
    ```  
 
-3. Start the development server:  
+4. Start the development server:  
    ```bash  
    npm run dev  
    ```  
