@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 
 function HomePage() {
   const [dataNovel, setDataNovel] = useState(null);
-  const { data: session, status } = useSession();
+  // const { data: session, status } = useSession();
 
   const fetcher = (url: string | Request | URL) =>
     fetch(url).then((res) => res.json());
@@ -36,9 +36,9 @@ function HomePage() {
   if (listNovelsError)
     return <div>Failed to load, Error : {listNovelsError.message}</div>;
 
-  if (!session) return <Loading />;
-  if (!listNovelsData) return <Loading />;
-  if (!novelData) return <Loading />;
+  // if (!session) return <Loading />;
+  // if (!listNovelsData) return <Loading />;
+  // if (!novelData) return <Loading />;
 
   console.log(listNovelsData);
 
