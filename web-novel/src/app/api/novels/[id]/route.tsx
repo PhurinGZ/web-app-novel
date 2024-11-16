@@ -11,7 +11,7 @@ import Chapter from "@/models/Chapter";
 import Review from "@/models/Review";
 
 // Mark route as dynamic
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // Define valid types and statuses
 const VALID_TYPES = ["novel", "webtoon"];
@@ -21,12 +21,6 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
   await dbConnect();
   // console.log(params.id)
 
@@ -36,7 +30,7 @@ export async function GET(
       .populate("rate")
       .populate("category")
       .populate("chapters", null, Chapter)
-      .populate("reviews", null, Review); 
+      .populate("reviews", null, Review);
 
     if (!novel) {
       return NextResponse.json({ message: "Novel not found" }, { status: 404 });
@@ -45,7 +39,11 @@ export async function GET(
     return NextResponse.json({ novel }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { message: `Error fetching novel: ${error instanceof Error && error.message}` },
+      {
+        message: `Error fetching novel: ${
+          error instanceof Error && error.message
+        }`,
+      },
       { status: 500 }
     );
   }
