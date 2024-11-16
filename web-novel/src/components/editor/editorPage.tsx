@@ -22,10 +22,12 @@ const ChapterEditPage = () => {
     fetcher
   );
 
+  // console.log(data)
+
   useEffect(() => {
     if(data){
-      const chapterTitle = data?.chapter?.name;
-      const chapterContent = data?.chapter?.content;
+      const chapterTitle = data?.name;
+      const chapterContent = data?.content;
       setTitle(chapterTitle);
       setContent(chapterContent);
       setOriginalTitle(chapterTitle);

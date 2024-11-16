@@ -39,7 +39,7 @@ const ReadNovel = ({ _id }: Props) => {
     fetch(url).then((res) => res.json());
   const { data, error } = useSWR(`/api/chapters/${_id}`, fetcher);
 
-  console.log(dataNovel);
+  // console.log(dataNovel);
   // console.log(data)
   const {
     data: comments,
