@@ -105,7 +105,7 @@ function SliderBook({ dataCardNovel }: any) {
     })
   );
 
-  console.log(dataCardNovel);
+  // console.log(dataCardNovel);
 
   const [selected, setSelected] = React.useState<number[]>([]); // Change to number[]
 
