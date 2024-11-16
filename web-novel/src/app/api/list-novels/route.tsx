@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import ListNovel from "@/models/listNovel";
+import Novel from "@/models/Novel";
 
 // Mark route as dynamic
 export const dynamic = "force-dynamic";
@@ -9,7 +10,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   await dbConnect();
   try {
-    const listNovels = await ListNovel.find().populate("novels");
+    const listNovels = await ListNovel.find().populate("novels",null,Novel);
 
     return NextResponse.json(listNovels);
   } catch (error: any) {
