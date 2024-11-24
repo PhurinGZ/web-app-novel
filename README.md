@@ -10,7 +10,7 @@ A web-based application for creating, sharing, and managing interactive novels.
 - **User Profiles**: Personalized dashboards to manage novels and track progress.  
 - **Responsive Design**: Optimized for both desktop and mobile devices.  
 - **Story Browsing**: Search and explore novels by genre, rating, or popularity.
-- - **File**: No feature to recive file ex. Image Novel, Profile Image, Banner Profile. 
+- **File**: No feature to recive file ex. Image Novel, Profile Image, Banner Profile. 
 
 ## 📂 Project Structure  
 
