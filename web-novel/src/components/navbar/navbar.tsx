@@ -31,38 +31,50 @@ const NavBar = () => {
   const [isCategoryOpen, setIsCategoryOpen] = React.useState(false);
   const { data: session, status } = useSession();
 
+  const CategoryButton = ({ className = "" }) => (
+    <button
+      type="button"
+      className={`inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white focus:outline-none hover:bg-purple-600/50 rounded-lg transition-colors ${className}`}
+      onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+    >
+      <Image
+        src="/image/list.png"
+        width={20}
+        height={20}
+        alt="list"
+        className="w-5 h-5 cursor-pointer"
+      />
+      <p className="ml-2">หมวดหมู่</p>
+    </button>
+  );
+
   return (
     <>
-      <Navbar
-        className="bg-navbar-color sticky"
+      <Navbar 
+        className="bg-purple-900 fixed top-0 w-full h-16"
         isBordered
         isMenuOpen={isMenuOpen}
         onMenuOpenChange={setIsMenuOpen}
+        maxWidth="full"
       >
-        <NavbarBrand className="flex space-x-10">
+        <NavbarContent className="sm:hidden" justify="start">
+          <NavbarMenuToggle
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            className="text-white"
+          />
+        </NavbarContent>
+
+        <NavbarBrand className="flex space-x-4 sm:space-x-10">
           <div className="flex items-center">
-            <Link href="/" color="foreground">
+            <Link href="/" color="foreground" className="flex items-center">
               <AcmeLogo />
-              <p className="font-bold text-white">ACME</p>
+              <p className="font-bold text-white ml-2">ACME</p>
             </Link>
           </div>
-          <div>
-            <NavbarContent className="hidden sm:flex gap-4">
+          <div className="hidden sm:block">
+            <NavbarContent className="gap-4">
               <NavbarItem>
-                <button
-                  type="button"
-                  className="inline-flex justify-center shadow-sm px-4 py-2 text-sm font-medium text-white focus:outline-none"
-                  onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-                >
-                  <Image
-                    src="/image/list.png"
-                    width={100}
-                    height={100}
-                    alt="list"
-                    className="max-w-5 in-h-5 cursor-pointer"
-                  />
-                  <p className="ml-2">หมวดหมู่</p>
-                </button>
+                <CategoryButton />
               </NavbarItem>
             </NavbarContent>
           </div>
@@ -70,7 +82,7 @@ const NavBar = () => {
 
         <NavbarContent as="div" justify="end" className="flex items-center gap-4">
           <button 
-            className="p-2 hover:bg-white/10 rounded-full transition-colors"
+            className="p-2 hover:bg-purple-600/50 rounded-full transition-colors"
             onClick={() => router.push('/search')}
           >
             <Search className="w-5 h-5 text-white" />
@@ -111,18 +123,33 @@ const NavBar = () => {
             </Dropdown>
           ) : (
             <div>
-              <Link href="/membership">Login/registe</Link>
+              <Link 
+                href="/membership" 
+                className="text-white hover:text-purple-200 transition-colors"
+              >
+                Login/register
+              </Link>
             </div>
           )}
         </NavbarContent>
+
+        <NavbarMenu className="pt-6 bg-purple-900">
+          <NavbarMenuItem>
+            <CategoryButton className="w-full justify-start" />
+          </NavbarMenuItem>
+        </NavbarMenu>
       </Navbar>
 
+      {/* Add spacing below navbar */}
+      <div className="h-16" />
+
+      {/* Category Overlay */}
       {isCategoryOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="fixed inset-0 bg-purple-900/50 z-40"
           onClick={() => setIsCategoryOpen(false)}
         >
-          <div className="absolute inset-0 mt-10 z-50">
+          <div className="absolute inset-0 mt-16 z-50">
             <Category onClose={() => setIsCategoryOpen(false)} />
           </div>
         </div>

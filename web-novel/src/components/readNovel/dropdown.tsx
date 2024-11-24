@@ -18,8 +18,6 @@ const Dropdown = ({ novelId, id }: Props) => {
     fetch(url).then((res) => res.json());
   const { data, error } = useSWR(`/api/novels/${novelId}`, fetcher);
 
-  // console.log(data.novel.chapters)
-
   React.useEffect(() => {
     if (data?.novel?.chapters) {
       setChapters(data.novel.chapters);
@@ -53,51 +51,80 @@ const Dropdown = ({ novelId, id }: Props) => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row items-center gap-4 w-full">
-      <div className="flex-1 min-w-0">
-        <Select
-          label="Chapter"
-          placeholder="Select chapter"
-          selectedKeys={[selectedChapterId]}
-          disabledKeys={[selectedChapterId]}
-          onChange={(e) => handleChapterChange(e.target.value)}
-          className="w-full"
-          size="sm"
-          variant="bordered"
-        >
-          {chapters.map((chapter: { _id: string; name: string }) => (
-            <SelectItem
-              key={chapter._id}
-              value={chapter._id}
-              className="py-2 px-3"
-            >
-              {chapter.name}
-            </SelectItem>
-          ))}
-        </Select>
-      </div>
-
-      <div className="flex items-center gap-2">
+    <div className="w-full space-y-4 md:space-y-0">
+      {/* Navigation Buttons for Mobile - Top */}
+      <div className="flex justify-between gap-2 md:hidden">
         <Button
           variant="bordered"
           size="sm"
           onClick={() => handleNavigation("prev")}
           isDisabled={currentIndex <= 0}
-          className="min-w-[100px]"
-          startContent={<ChevronLeft className="w-4 h-4" />}
+          className="flex-1"
         >
-          Previous
+          <ChevronLeft className="w-4 h-4" />
+          <span className="hidden xs:inline ml-1">Previous</span>
         </Button>
         <Button
           variant="bordered"
           size="sm"
           onClick={() => handleNavigation("next")}
           isDisabled={currentIndex >= chapters.length - 1}
-          className="min-w-[100px]"
-          endContent={<ChevronRight className="w-4 h-4" />}
+          className="flex-1"
         >
-          Next
+          <span className="hidden xs:inline mr-1">Next</span>
+          <ChevronRight className="w-4 h-4" />
         </Button>
+      </div>
+
+      {/* Main Container */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4">
+        {/* Dropdown */}
+        <div className="flex-1 min-w-0">
+          <Select
+            label="Chapter"
+            placeholder="Select chapter"
+            selectedKeys={[selectedChapterId]}
+            disabledKeys={[selectedChapterId]}
+            onChange={(e) => handleChapterChange(e.target.value)}
+            className="w-full"
+            size="sm"
+            variant="bordered"
+          >
+            {chapters.map((chapter: { _id: string; name: string }) => (
+              <SelectItem
+                key={chapter._id}
+                value={chapter._id}
+                className="py-2 px-3"
+              >
+                {chapter.name}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
+
+        {/* Navigation Buttons for Desktop */}
+        <div className="hidden md:flex items-center gap-2">
+          <Button
+            variant="bordered"
+            size="sm"
+            onClick={() => handleNavigation("prev")}
+            isDisabled={currentIndex <= 0}
+            className="min-w-[100px]"
+            startContent={<ChevronLeft className="w-4 h-4" />}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="bordered"
+            size="sm"
+            onClick={() => handleNavigation("next")}
+            isDisabled={currentIndex >= chapters.length - 1}
+            className="min-w-[100px]"
+            endContent={<ChevronRight className="w-4 h-4" />}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -136,7 +136,6 @@ const ReadNovel = ({ _id }: Props) => {
                     />
                   </div>
                 )}
-                z
               </div>
             </div>
           </div>

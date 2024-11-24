@@ -1,94 +1,97 @@
-"use client";
+import React, { useEffect, useState, useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-//SliderBook.jsx
-import React from "react";
-import { ScrollMenu, VisibilityContext } from "react-horizontal-scrolling-menu";
-import { ArrowBack, ArrowForward } from "@mui/icons-material";
-import { Link } from "@nextui-org/react";
-import "./style.scss";
-import "react-horizontal-scrolling-menu/dist/styles.css";
-import Image from "next/image";
+const classNames = (...classes: (string | boolean | undefined)[]) => {
+  return classes.filter(Boolean).join(" ");
+};
 
 interface ArrowProps {
-  children: React.ReactNode;
-  disabled?: boolean;
-  onClick?: () => void;
+  direction: "left" | "right";
+  onClick: () => void;
+  disabled: boolean;
 }
 
 interface Novel {
   id: number;
   title: string;
-  category: {};
-  rate: any; // Change type to number
-  author: any;
-}
-
-interface Category {
-  _id: string;
-  name: string;
-  novels: string[];
-  nameThai: string;
-  createdAt: string;
-}
-
-interface CreatedBy {
-  _id: string;
-  username: string;
-  email: string;
-  password: string;
-  role: string;
-  // Add other fields that may be relevant (e.g., createdAt, updatedAt, etc.)
-}
-
-interface Rate {
-  _id: string;
-  name: string;
-  novels: string[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Props {
-  dataCardNovel: {
-    map: any;
-    averageRating: number;
-    bookshelf: string[];
-    category: Category;
-    chapters: string[];
-    createdAt: string;
-    createdBy: CreatedBy;
-    detail: string;
-    likes: string[];
-    name: string;
-    publishedAt: string;
-    rate: Rate;
-    reviews: string[];
-    status: string;
-    tags: string[];
-    type: string;
-    updatedAt: string;
-    viewCount: number;
-    __v: number;
-    _id: string;
-  };
-}
-
-interface Item {
-  id: number;
-  title: string;
   category: string;
-  rate: number;
+  rate: string;
   author: string;
 }
 
 interface CardProps extends Novel {
   onClick: () => void;
   selected: boolean;
-  itemId: number; // Add itemId to the props interface
+  itemId: string;
 }
 
-function SliderBook({ dataCardNovel }: any) {
-  const items: Item[] = dataCardNovel.map(
+const Arrow = ({ direction, onClick, disabled }: ArrowProps) => (
+  <button
+    onClick={onClick}
+    className={classNames(
+      "hidden md:flex absolute top-1/2 -translate-y-1/2 z-10 justify-center items-center w-10 h-10",
+      "bg-white/80 hover:bg-white rounded-full shadow-lg transition-all",
+      "disabled:opacity-50 disabled:cursor-not-allowed",
+      direction === "left" ? "-left-5" : "-right-5" // Changed from left-2/right-2 to -left-5/-right-5
+    )}
+    disabled={disabled}
+  >
+    {direction === "left" ? (
+      <ChevronLeft className="w-6 h-6" />
+    ) : (
+      <ChevronRight className="w-6 h-6" />
+    )}
+  </button>
+);
+
+const SliderBook = ({ dataCardNovel }: { dataCardNovel: any[] }) => {
+  const [selected, setSelected] = useState<string[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const dragThreshold = 5;
+  const [dragDistance, setDragDistance] = useState(0);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const checkScroll = () => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      setCanScrollLeft(container.scrollLeft > 0);
+      setCanScrollRight(
+        container.scrollLeft < container.scrollWidth - container.clientWidth - 1
+      );
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", checkScroll);
+      checkScroll();
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", checkScroll);
+      }
+    };
+  }, []);
+
+  const items = dataCardNovel.map(
     (novel: {
       _id: string;
       name: string;
@@ -97,76 +100,130 @@ function SliderBook({ dataCardNovel }: any) {
       createdBy: { username: string };
     }) => ({
       id: novel._id,
-
-      title: novel.name, // Change to novel.title
+      title: novel.name,
       category: novel?.category?.name,
-      rate: novel?.rate?.name, // Convert rate to number
+      rate: novel?.rate?.name,
       author: novel?.createdBy?.username,
     })
   );
 
-  // console.log(dataCardNovel);
+  const isItemSelected = (id: string) => selected.includes(id);
 
-  const [selected, setSelected] = React.useState<number[]>([]); // Change to number[]
-
-  const isItemSelected = (id: number) => selected.includes(id); // Simplify condition
-
-  const handleClick = (id: number) => () => {
-    setSelected((currentSelected) =>
-      isItemSelected(id)
-        ? currentSelected.filter((el) => el !== id)
-        : [...currentSelected, id]
-    );
+  const handleClick = (id: string) => () => {
+    // Changed parameter type to string
+    if (Math.abs(dragDistance) < dragThreshold) {
+      setSelected((currentSelected) =>
+        isItemSelected(id)
+          ? currentSelected.filter((el) => el !== id)
+          : [...currentSelected, id]
+      );
+    }
   };
+
+  const scroll = (direction: "left" | "right") => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const scrollAmount = container.clientWidth * 0.8;
+    container.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
+  // Touch handlers - only active on mobile
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isMobile) return; // Disable on desktop
+
+    const slider = containerRef.current;
+    if (!slider) return;
+
+    setIsDragging(true);
+    slider.setPointerCapture(e.pointerId);
+    setStartX(e.clientX);
+    setScrollLeft(slider.scrollLeft);
+    setDragDistance(0);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isMobile || !isDragging) return; // Disable on desktop
+
+    const slider = containerRef.current;
+    if (!slider) return;
+
+    const x = e.clientX;
+    const distance = x - startX;
+    setDragDistance(distance);
+
+    slider.scrollLeft = scrollLeft - distance;
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isMobile) return; // Disable on desktop
+
+    const slider = containerRef.current;
+    if (!slider) return;
+
+    setIsDragging(false);
+    slider.releasePointerCapture(e.pointerId);
+  };
+
   return (
-    <ScrollMenu
-      LeftArrow={LeftArrow}
-      RightArrow={RightArrow}
-      transitionBehavior={"smooth"}
-    >
-      {items.map(({ id, title, category, rate, author }) => (
-        <Card
-          itemId={id}
-          title={title}
-          category={category}
-          rate={rate}
-          author={author}
-          key={id}
-          onClick={handleClick(id)}
-          selected={isItemSelected(id)}
-          id={0}
-        />
-      ))}
-    </ScrollMenu>
+    <div className="relative w-full md:px-8">
+      {" "}
+      {/* Added px-8 for arrow space */}
+      <div className="overflow-hidden">
+        {" "}
+        {/* Added wrapper div with overflow-hidden */}
+        <div
+          ref={containerRef}
+          className={classNames(
+            "flex gap-5 scroll-smooth",
+            isMobile ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "",
+            isMobile ? "touch-pan-x" : "touch-none",
+            "overflow-x-auto" // Keep overflow-x-auto here
+          )}
+          style={{
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            WebkitOverflowScrolling: isMobile ? "touch" : "auto",
+            userSelect: "none",
+          }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerUp}
+        >
+          {items.map(({ id, title, category, rate, author }) => (
+            <Card
+              key={id}
+              itemId={id}
+              title={title}
+              category={category}
+              rate={rate}
+              author={author}
+              onClick={handleClick(id)}
+              selected={isItemSelected(id)}
+              id={0}
+            />
+          ))}
+        </div>
+      </div>
+      <Arrow
+        direction="left"
+        onClick={() => scroll("left")}
+        disabled={!canScrollLeft}
+      />
+      <Arrow
+        direction="right"
+        onClick={() => scroll("right")}
+        disabled={!canScrollRight}
+      />
+    </div>
   );
-}
+};
 
-function LeftArrow() {
-  const visibility = React.useContext(VisibilityContext);
-  const isFirstItemVisible = visibility.useIsVisible("first", true);
-  const scrollPrev = visibility.scrollPrev;
-
-  return (
-    <Arrow disabled={isFirstItemVisible} onClick={() => scrollPrev()}>
-      <ArrowBack />
-    </Arrow>
-  );
-}
-
-function RightArrow() {
-  const visibility = React.useContext(VisibilityContext);
-  const isLastItemVisible = visibility.useIsVisible("last", false);
-  const scrollNext = visibility.scrollNext;
-  // console.log(isLastItemVisible)
-
-  return (
-    <Arrow disabled={isLastItemVisible} onClick={() => scrollNext()}>
-      <ArrowForward />
-    </Arrow>
-  );
-}
-
-function Card({
+const Card = ({
   onClick,
   selected,
   title,
@@ -174,77 +231,34 @@ function Card({
   rate,
   author,
   itemId,
-}: Readonly<CardProps>) {
-  // const { openModal } = useModal(); // Using the useModal hook to access openModal function from context
-
-  const handleCardClick = () => {
-    // Call openModal function to open the modal
-    // openModal();
-    // Additional actions when card is clicked can be placed here
-    // For example, you might want to store the selected item ID or perform other operations
-    onClick();
-  };
-
-  // const handleClick = () => {
-  //   // Navigate to the homepage with the modal opened and the corresponding item's ID in the URL
-  //   navigate(`/b/${itemId}`);
-  // };
-
+}: Readonly<CardProps>) => {
   return (
     <div
-      onClick={handleCardClick}
-      style={{
-        width: "160px",
-        margin: "10px",
-      }}
+      onClick={onClick}
+      className="w-40 flex-shrink-0 cursor-pointer"
       tabIndex={0}
     >
-      <Link href={`/book/${itemId}`} style={{ textDecoration: "none" }}>
-        <div className={`card ${selected ? "selected" : ""} `}>
-          <Image
-            src={"/image/imageBook1.png"}
-            height={100}
+      <a
+        href={`/book/${itemId}`}
+        className="no-underline text-inherit"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={`card ${selected ? "selected" : ""}`}>
+          <img
+            src="image/imageBook1.png"
             alt={title}
-            width={200}
-            className="rounded-lg"
+            className="rounded-lg w-40 h-50 object-cover"
+            draggable={false}
           />
-
-          <h2 className="text-xl font-semibold mt-2">{title}</h2>
-          <p className="text-gray-700 mt-2">{author}</p>
-          <p className="text-gray-700 mt-2">
+          <h2 className="text-xl font-semibold mt-2 truncate">{title}</h2>
+          <p className="text-gray-700 mt-2 truncate">{author}</p>
+          <p className="text-gray-700 mt-2 truncate">
             {category} · {rate}
           </p>
         </div>
-      </Link>
+      </a>
     </div>
   );
-}
-
-function Arrow({ children, disabled, onClick }: ArrowProps) {
-  return (
-    <button
-      disabled={disabled}
-      onClick={onClick}
-      style={{
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "relative",
-        right: "1%",
-        opacity: disabled ? "0" : "1",
-        userSelect: "none",
-        borderRadius: "50%",
-        width: "40px",
-        height: "40px",
-        backgroundColor: "#ccc",
-        border: "none",
-        outline: "none",
-      }}
-    >
-      {children}
-    </button>
-  );
-}
+};
 
 export default SliderBook;

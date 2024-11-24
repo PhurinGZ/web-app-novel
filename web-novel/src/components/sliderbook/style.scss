@@ -1,6 +1,20 @@
-.react-horizontal-scrolling-menu--inner-wrapper{
-  align-items: center;
+// style.scss
+
+.slider-container {
+  -webkit-overflow-scrolling: touch;
+  user-select: none;
+  
+  // Hide scrollbar
+  > div {
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
-.react-horizontal-scrolling-menu--scroll-container{
-  overflow: hidden;
+
+// Optional: Add smooth scrolling behavior
+.scroll-smooth {
+  scroll-behavior: smooth;
 }
