@@ -1,8 +1,5 @@
 # Web Novel Application  
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)  
-A web-based application for creating, sharing, and managing interactive novels.  
-
 ## 🌟 Features  
 
 - **User Authentication**: Secure sign-in and sign-up functionality.  
